@@ -1,2 +1,2 @@
-# mupl
-DSL for music pieces
+## MUPL
+Programming language for composing music pieces
