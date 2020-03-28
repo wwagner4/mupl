@@ -22,6 +22,15 @@ class ParseSuite extends AnyFunSuite with Matchers {
     ("(108|1|H)", Sound(108, 1, GainVal.H)),
     ("(108|32|H)", Sound(108, 32, GainVal.H)),
     ("(67|32|H)", Sound(67, 32, GainVal.H)),
+    ("(68|32|H )", Sound(68, 32, GainVal.H)),
+    ("(68|32|  H )", Sound(68, 32, GainVal.H)),
+    ("(68|32|)", Sound(68, 32, GainVal.M)),
+    ("(67||H)", Sound(67, 1, GainVal.H)),
+    ("(67| 2|H)", Sound(67, 2, GainVal.H)),
+    ("(67| 2  |H)", Sound(67, 2, GainVal.H)),
+    ("(|2|H)", Sound(44, 2, GainVal.H)),
+    ("(66 |2|H)", Sound(66, 2, GainVal.H)),
+    ("(  66 |2|H)", Sound(66, 2, GainVal.H)),
   )
 
   for ((in, should) <- dataValidSounds) {
@@ -58,8 +67,9 @@ class ParseSuite extends AnyFunSuite with Matchers {
   def parseSound(input: String): Sound = {
 
     def toPitch(value: String): Int = {
+      val valt = value.trim
       try {
-        val pitch = value.toInt
+        val pitch = if (valt.isEmpty) 44 else valt.toInt
         if (pitch < 21) throw new IllegalArgumentException(s"$input does not contain a valid pitch. Must be greater 21")
         if (pitch > 108) throw new IllegalArgumentException(s"$input does not contain a valid pitch. Must be smaller 108")
         pitch
@@ -72,8 +82,9 @@ class ParseSuite extends AnyFunSuite with Matchers {
     val validDurations = List(1, 2, 4, 8, 32, 64)
 
     def toDuration(value: String): Int = {
+      val valt = value.trim
       try {
-        val dur = value.toInt
+        val dur = if (valt.isEmpty) 1 else valt.toInt
         if (!validDurations.contains(dur)) {
           val durStr = validDurations.mkString(", ")
           throw new IllegalArgumentException(s"$input does not contain avalid duration. Must be one of $durStr")
@@ -86,8 +97,10 @@ class ParseSuite extends AnyFunSuite with Matchers {
     }
 
     def toGain(value: String): GainVal = {
+      val valt = value.trim
       try {
-        GainVal.withName(value)
+        if (valt.isEmpty) GainVal.M
+        else GainVal.withName(valt)
       } catch {
         case _: NoSuchElementException =>
           val gainVals = GainVal.values.mkString(", ")
