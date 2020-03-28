@@ -14,12 +14,22 @@ case class Sound(pitch: Int,
                  gain: GainVal
                 )
 
+case class Melo(name: String,
+                sounds: List[Sound]
+               )
+
 object MuplParser extends RegexParsers {
 
+  def melo: Parser[Melo] =
+    """[a-zA-Z_][a-zA-Z0-9_]*""".r ~ "[" ~ rep(sound) ~ "]" ^^ 
+      { case name ~ _ ~ sounds ~ _ => Melo(name, sounds) }
 
-  def sound: Parser[Sound] = "(" ~ """(0|[1-9]\d*)|\s*""".r  ~ "|" ~ """(0|[1-9]\d*)|\s*""".r  ~ "|" ~ """[A-Z]+|\s*""".r  ~ ")"    ^^ {case _ ~ a ~  _ ~ b ~ _ ~  c ~ _ => createSound(a, b, c)}
+  def sound: Parser[Sound] = 
+    "(" ~ """(0|[1-9]\d*)|\s*""".r ~ "|" ~ """(0|[1-9]\d*)|\s*""".r ~ "|" ~ """[A-Z]+|\s*""".r ~ ")" ^^ 
+      { case _ ~ a ~ _ ~ b ~ _ ~ c ~ _ => createSound(a, b, c) }
 
 
+  
   def parseSound(str: String): Sound = {
     parse(sound, str) match {
       case Success(sound, _) => sound
@@ -28,6 +38,14 @@ object MuplParser extends RegexParsers {
     }
   }
 
+  def parseMelo(str: String): Melo = {
+    parse(melo, str) match {
+      case Success(out, _) => out
+      case Failure(a, b) => throw new IllegalStateException(s"FAILURE could not parse '$str' ($a) ($b)")
+      case Error(a, b) => throw new IllegalStateException(s"ERROR could not parse '$str' ($a) ($b)")
+    }
+  }
+  
   def createSound(a: String, b: String, c: String): Sound = {
 
     val input = s"($a|$b|$c)"
@@ -53,7 +71,7 @@ object MuplParser extends RegexParsers {
         val dur = if (valt.isEmpty) 1 else valt.toInt
         if (!validDurations.contains(dur)) {
           val durStr = validDurations.mkString(", ")
-          throw new IllegalArgumentException(s"$input does not contain avalid duration. Must be one of $durStr")
+          throw new IllegalArgumentException(s"$input does not contain a valid duration. Must be one of $durStr")
         }
         dur
       } catch {
@@ -82,6 +100,25 @@ object MuplParser extends RegexParsers {
 
 class ParseSuite extends AnyFunSuite with Matchers {
   
+  test("parse melo") {
+    val melo  = MuplParser.parseMelo("m1 [ (55|2|M) (55|4|M) (77|2|LL) ]")
+    melo.name.mustBe("m1")
+    melo.sounds.size.mustBe(3)
+    
+    melo.sounds(0).pitch.mustBe(55)
+    melo.sounds(1).pitch.mustBe(55)
+    melo.sounds(2).pitch.mustBe(77)
+
+    melo.sounds(0).dur.mustBe(2)
+    melo.sounds(1).dur.mustBe(4)
+    melo.sounds(2).dur.mustBe(2)
+
+    melo.sounds(0).gain.mustBe(GainVal.M)
+    melo.sounds(1).gain.mustBe(GainVal.M)
+    melo.sounds(2).gain.mustBe(GainVal.LL)
+
+  }
+
   val dataValidSounds = List(
     ("(22|2|M)", Sound(22, 2, GainVal.M)),
     ("(21|64|LL)", Sound(21, 64, GainVal.LL)),
