@@ -4,12 +4,58 @@ import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.must.Matchers
 
 class ParserTest extends AnyFunSuite with Matchers {
+
+  test("all") {
+    val in: String =
+      """
+        |a = [] 
+        |d = e
+        |x1 = {[
+        |       a A[(||)(||)(||LL)(|4|)]
+        |     ]}
+        |""".stripMargin
+    val piece = MuplParser.parseAll(in)
+    piece.size mustBe 3
+    piece.forall(_.isInstanceOf[Variable]) mustBe true
+    val e1 = piece(0)
+    e1.name mustBe "a"
+    e1.chunk.isInstanceOf[Sequence]
+
+    val e2 = piece(1)
+    e2.name mustBe "d"
+    e2.chunk.isInstanceOf[Symbol]
+
+    val e3 = piece(2)
+    e3.name mustBe "x1"
+    e3.chunk.isInstanceOf[Parallel]
+  }
   
+  test("variable") {
+    val v = MuplParser.parseVariable("a = {}")
+    print(v)
+  }
+
+  test("parse sequence") {
+    val seq: Sequence = MuplParser.parseSequence(
+      """[asd [a b c] {
+        |  [ A[(|1|) ] 
+        |    B[(|2|) (|2|) (33|8|) ] 
+        |    [a b c d e f g h] 
+        |  ]
+        |  []
+        |}]""".stripMargin)
+    seq.chunks.size.mustBe(3)
+    val s2 = seq.chunks(1).asInstanceOf[Sequence]
+    s2.chunks.size.mustBe(3)
+    val p = seq.chunks(2).asInstanceOf[Parallel]
+    p.sequences.size mustBe 2
+  }
+
   test("parse melo") {
-    val melo  = MuplParser.parseMelo("m1 [ (55|2|M) (55|4|M) (77|2|LL) ]")
+    val melo = MuplParser.parseMelo("m1 [ (55|2|M) (55|4|M) (77|2|LL) ]")
     melo.name.mustBe("m1")
     melo.sounds.size.mustBe(3)
-    
+
     melo.sounds(0).pitch.mustBe(55)
     melo.sounds(1).pitch.mustBe(55)
     melo.sounds(2).pitch.mustBe(77)

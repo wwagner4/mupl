@@ -1,19 +1,71 @@
 package mupl
 
 import mupl.GainVal.GainVal
-import mupl.MuplParser.handleParseError
 
 import scala.util.parsing.combinator.RegexParsers
 
+object GainVal extends Enumeration {
+  type GainVal = Value
+  val LL, L, M, H, HH = Value
+}
+
+sealed trait Chunk
+
+case class Melo(name: String,
+                sounds: List[Sound]
+               ) extends Chunk
+
+case class Variable(name: String,
+                    chunk: Chunk
+                   )
+
+case class Symbol(name: String) extends Chunk
+
+case class Sequence(chunks: List[Chunk]
+                   ) extends Chunk
+
+case class Parallel(sequences: List[Sequence]) extends Chunk
+
+case class Sound(pitch: Int,
+                 dur: Int,
+                 gain: GainVal
+                )
+
 object MuplParser extends RegexParsers {
 
+  def all: Parser[List[Variable]] = rep(variable) ^^ {variables => variables}
+
+  def name: Parser[String] = """[a-zA-Z_][a-zA-Z0-9_]*""".r ^^ { nam => nam }
+
+  def symbol: Parser[Symbol] = name ^^ {nam =>  Symbol(nam) }
+  
   def melo: Parser[Melo] =
-    """[a-zA-Z_][a-zA-Z0-9_]*""".r ~ "[" ~ rep(sound) ~ "]" ^^
-      { case name ~ _ ~ sounds ~ _ => Melo(name, sounds) }
+    name ~ "[" ~ rep(sound) ~ "]" ^^ { case name ~ _ ~ sounds ~ _ => Melo(name, sounds) }
+
+  def variable: Parser[Variable] = name ~ "=" ~ chunk ^^ {
+    case name ~ _ ~ chunk => Variable(name, chunk)
+  }
 
   def sound: Parser[Sound] =
-    "(" ~ """(0|[1-9]\d*)|\s*""".r ~ "|" ~ """(0|[1-9]\d*)|\s*""".r ~ "|" ~ """[A-Z]+|\s*""".r ~ ")" ^^
-      { case _ ~ a ~ _ ~ b ~ _ ~ c ~ _ => createSound(a, b, c) }
+    "(" ~ """(0|[1-9]\d*)|\s*""".r ~ "|" ~ """(0|[1-9]\d*)|\s*""".r ~ "|" ~ """[A-Z]+|\s*""".r ~ ")" ^^ {
+      case _ ~ a ~ _ ~ b ~ _ ~ c ~ _ => createSound(a, b, c)
+    }
+
+  def sequence: Parser[Sequence] = "[" ~ rep(chunk) ~ "]" ^^ {
+    case _ ~ chunks ~ _ => Sequence(chunks)
+  }
+
+  def parallel: Parser[Parallel] = "{" ~ rep(sequence) ~ "}" ^^ {
+    case _ ~ sequences ~ _ => Parallel(sequences)
+  }
+
+  def chunk: Parser[Chunk] = melo | symbol | sequence | parallel ^^ {chunk => chunk}
+
+  def parseAll(str: String): List[Variable] = handleParseError(str, parse(all, str))
+
+  def parseVariable(str: String): Variable = handleParseError(str, parse(variable, str))
+
+  def parseSequence(str: String): Sequence = handleParseError(str, parse(sequence, str))
 
   def parseSound(str: String): Sound = handleParseError(str, parse(sound, str))
 
@@ -26,7 +78,7 @@ object MuplParser extends RegexParsers {
       case Error(a, b) => throw new IllegalStateException(s"ERROR could not parse '$str'. $a. ${b.pos})")
     }
   }
-  
+
   private def createSound(a: String, b: String, c: String): Sound = {
 
     val input = s"($a|$b|$c)"
