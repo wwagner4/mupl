@@ -83,21 +83,6 @@ class Melody {
         <<<"pl(3) must be overwritten>">>>;
         return null;
     }
-    fun Sound pl(int duration, float gainFact) {
-        return pl(55, duration, gainFact);
-    }
-    fun Sound plD(int duration) {
-        return pl(55, duration, 1.0);
-    }
-    fun Sound pl(int midi, int duration) {
-        return pl(midi, duration, 1.0);
-    }
-    fun Sound plL(int midi, int duration) {
-        return pl(midi, duration, 0.3);
-    }
-    fun Sound pl(int midi) {
-        return pl(midi, 1, 1.0);
-    }
 }
 
 class SKMelody extends Melody {
@@ -148,8 +133,8 @@ class SKMelody01 extends SKMelody {
 
     fun Sound[] sounds() {
         return [
-            nop(), plL(55, 1),pl(58, 2),pl(56, 2),plL(59, 1),plL(58, 2),plL(58, 2),
-            nop(), plL(55, 1),pl(58, 2),pl(56, 2),plL(59, 1),plL(58, 1)
+            nop(), pl(55, 1, 0.3),pl(58, 2, 1.0),pl(56, 2, 1.0),pl(59, 1, 0.3),pl(58, 2, 0.3),pl(58, 2, 0.3),
+            nop(), pl(55, 1, 0.3),pl(58, 2, 1.0),pl(56, 2, 1.0),pl(59, 1, 0.3),pl(58, 1, 0.3)
         ];
     }
 
@@ -158,8 +143,8 @@ class SKMelody02 extends SKMelody {
 
     fun Sound[] sounds() {
         return [
-            pl(39, 1),pa(1), pl(44, 1), pa(1),
-            pl(39, 1),pa(1), plL(44, 2), plL(39, 2), pa(1) 
+            pl(39, 1, 1.0),pa(1), pl(44, 1, 1.0), pa(1),
+            pl(39, 1, 1.0),pa(1), pl(44, 2, 0.3), pl(39, 2, 0.3), pa(1) 
         ];
     }
 
@@ -169,8 +154,8 @@ class GlotMelody01 extends BufGlotAhhMelody {
 
     fun Sound[] sounds() {
         return [
-            plD(2),plD(2),plD(2),plD(2),plD(2),plD(2),plD(2),plD(4),plD(4), 
-            plD(2),plD(2),plD(2),plD(4),plD(4),plD(2),plD(2),plD(2),plD(2) 
+            pl(55, 2,  1.0),pl(55, 2,  1.0),pl(55, 2,  1.0),pl(55, 2,  1.0),pl(55, 2, 1.0),pl(55, 2, 1.0),pl(55, 2, 1.0),pl(55, 4, 1.0),pl(55, 4, 1.0), 
+            pl(55, 2, 1.0),pl(55, 2, 1.0),pl(55, 2, 1.0),pl(55, 4, 1.0),pl(55, 4, 1.0),pl(55, 2, 1.0),pl(55, 2, 1.0),pl(55, 2, 1.0),pl(55, 2, 1.0) 
         ];
     }
 
