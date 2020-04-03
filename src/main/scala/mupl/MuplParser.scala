@@ -1,17 +1,17 @@
 package mupl
 
-import scala.util.parsing.combinator.RegexParsers
-
 import mupl.GainVal.GainVal
+
+import scala.util.parsing.combinator.RegexParsers
 
 object MuplParser extends RegexParsers {
 
-  def all: Parser[List[Variable]] = rep(variable) ^^ {variables => variables}
+  def all: Parser[List[Variable]] = rep(variable) ^^ { variables => variables }
 
   def name: Parser[String] = """[a-zA-Z_][a-zA-Z0-9_]*""".r ^^ { nam => nam }
 
-  def symbol: Parser[Symbol] = name ^^ {nam =>  Symbol(nam) }
-  
+  def symbol: Parser[Symbol] = name ^^ { nam => Symbol(nam) }
+
   def melo: Parser[Melo] =
     name ~ "[" ~ rep(sound) ~ "]" ^^ { case name ~ _ ~ sounds ~ _ => Melo(name, sounds) }
 
@@ -20,7 +20,7 @@ object MuplParser extends RegexParsers {
   }
 
   def sound: Parser[Sound] =
-    "(" ~ """(0|[1-9]\d*)|\s*""".r ~ "|" ~ """(0|[1-9]\d*)|\s*""".r ~ "|" ~ """[A-Z]+|\s*""".r ~ ")" ^^ {
+    "(" ~ """(0|[1-9]\d*)|\s*""".r ~ "|" ~ """[A-Z]+|\s*""".r ~ "|" ~ """(0|[1-9]\d*)|\s*""".r ~ ")" ^^ {
       case _ ~ a ~ _ ~ b ~ _ ~ c ~ _ => createSound(a, b, c)
     }
 
@@ -32,7 +32,7 @@ object MuplParser extends RegexParsers {
     case _ ~ sequences ~ _ => Parallel(sequences)
   }
 
-  def chunk: Parser[Chunk] = melo | symbol | sequence | parallel ^^ {chunk => chunk}
+  def chunk: Parser[Chunk] = melo | symbol | sequence | parallel ^^ { chunk => chunk }
 
   def parseAll(str: String): List[Variable] = handleParseError(str, parse(all, str))
 
@@ -56,13 +56,17 @@ object MuplParser extends RegexParsers {
 
     val input = s"($a|$b|$c)"
 
-    def toPitch(value: String): Int = {
+    def toPitch(value: String): Option[Int] = {
       val valt = value.trim
       try {
-        val pitch = if (valt.isEmpty) 44 else valt.toInt
-        if (pitch < 21) throw new IllegalArgumentException(s"$input does not contain a valid pitch. Must be greater 21")
-        if (pitch > 108) throw new IllegalArgumentException(s"$input does not contain a valid pitch. Must be smaller 108")
-        pitch
+        if (valt.isEmpty) {
+          None
+        } else {
+          val ival = valt.toInt
+          if (ival < 21) throw new IllegalArgumentException(s"$input does not contain a valid pitch. Must be greater 21")
+          if (ival > 108) throw new IllegalArgumentException(s"$input does not contain a valid pitch. Must be smaller 108")
+          Some(ival)
+        }
       } catch {
         case _: NumberFormatException =>
           throw new IllegalArgumentException(s"$input does not contain a valid pitch. Must be an integer")
@@ -86,11 +90,11 @@ object MuplParser extends RegexParsers {
       }
     }
 
-    def toGain(value: String): GainVal = {
+    def toGain(value: String): Option[GainVal] = {
       val valt = value.trim
       try {
-        if (valt.isEmpty) GainVal.M
-        else GainVal.withName(valt)
+        if (valt.isEmpty) None
+        else Some(GainVal.withName(valt))
       } catch {
         case _: NoSuchElementException =>
           val gainVals = GainVal.values.mkString(", ")
@@ -98,7 +102,7 @@ object MuplParser extends RegexParsers {
       }
     }
 
-    Sound(toPitch(a), toDuration(b), toGain(c))
+    Sound(toDuration(a), toGain(b), toPitch(c))
   }
 
 }

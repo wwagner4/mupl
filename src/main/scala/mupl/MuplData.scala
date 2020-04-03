@@ -24,8 +24,8 @@ case class Sequence(chunks: List[Chunk]
 
 case class Parallel(sequences: List[Sequence]) extends Chunk
 
-case class Sound(pitch: Int,
-                 dur: Int,
-                 gain: GainVal
+case class Sound(dur: Int,
+                 gain: Option[GainVal],
+                 pitch: Option[Int],
                 )
 

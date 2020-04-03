@@ -11,7 +11,7 @@ class ParserTest extends AnyFunSuite with Matchers {
         |a = [] 
         |d = e
         |x1 = {[
-        |       a A[(||)(||)(||LL)(|4|)]
+        |       a A[(||)(||)(|LL|)(4||)]
         |     ]}
         |""".stripMargin
     val piece = MuplParser.parseAll(in)
@@ -38,8 +38,8 @@ class ParserTest extends AnyFunSuite with Matchers {
   test("parse sequence") {
     val seq: Sequence = MuplParser.parseSequence(
       """[asd [a b c] {
-        |  [ A[(|1|) ] 
-        |    B[(|2|) (|2|) (33|8|) ] 
+        |  [ A[(1||) ] 
+        |    B[(2||) (2||) (8||33) ] 
         |    [a b c d e f g h] 
         |  ]
         |  []
@@ -52,40 +52,40 @@ class ParserTest extends AnyFunSuite with Matchers {
   }
 
   test("parse melo") {
-    val melo = MuplParser.parseMelo("m1 [ (55|2|M) (55|4|M) (77|2|LL) ]")
+    val melo = MuplParser.parseMelo("m1 [ (2|M|55) (4|M|55) (2|LL|77) ]")
     melo.name.mustBe("m1")
     melo.sounds.size.mustBe(3)
 
-    melo.sounds(0).pitch.mustBe(55)
-    melo.sounds(1).pitch.mustBe(55)
-    melo.sounds(2).pitch.mustBe(77)
+    melo.sounds(0).pitch.mustBe(Some(55))
+    melo.sounds(1).pitch.mustBe(Some(55))
+    melo.sounds(2).pitch.mustBe(Some(77))
 
     melo.sounds(0).dur.mustBe(2)
     melo.sounds(1).dur.mustBe(4)
     melo.sounds(2).dur.mustBe(2)
 
-    melo.sounds(0).gain.mustBe(GainVal.M)
-    melo.sounds(1).gain.mustBe(GainVal.M)
-    melo.sounds(2).gain.mustBe(GainVal.LL)
+    melo.sounds(0).gain.mustBe(Some(GainVal.M))
+    melo.sounds(1).gain.mustBe(Some(GainVal.M))
+    melo.sounds(2).gain.mustBe(Some(GainVal.LL))
 
   }
 
   val dataValidSounds = List(
-    ("(22|2|M)", Sound(22, 2, GainVal.M)),
-    ("(21|64|LL)", Sound(21, 64, GainVal.LL)),
-    ("(108|1|HH)", Sound(108, 1, GainVal.HH)),
-    ("(108|1|H)", Sound(108, 1, GainVal.H)),
-    ("(108|32|H)", Sound(108, 32, GainVal.H)),
-    ("(67|32|H)", Sound(67, 32, GainVal.H)),
-    ("(68|32|H )", Sound(68, 32, GainVal.H)),
-    ("(68|32|  H )", Sound(68, 32, GainVal.H)),
-    ("(68|32|)", Sound(68, 32, GainVal.M)),
-    ("(67||H)", Sound(67, 1, GainVal.H)),
-    ("(67| 2|H)", Sound(67, 2, GainVal.H)),
-    ("(67| 2  |H)", Sound(67, 2, GainVal.H)),
-    ("(|2|H)", Sound(44, 2, GainVal.H)),
-    ("(66 |2|H)", Sound(66, 2, GainVal.H)),
-    ("(  66 |2|H)", Sound(66, 2, GainVal.H)),
+    ("(2|M|22)", Sound(2, Some(GainVal.M), Some(22))),
+    ("(64|LL|21)", Sound(64, Some(GainVal.LL), Some(21))),
+    ("(1|HH|108)", Sound(1, Some(GainVal.HH), Some(108))),
+    ("(1|H|108)", Sound(1, Some(GainVal.H), Some(108))),
+    ("(32|H|108)", Sound(32, Some(GainVal.H), Some(108))),
+    ("(32|H|67)", Sound(32, Some(GainVal.H), Some(67))),
+    ("(32|H |68)", Sound(32, Some(GainVal.H), Some(68))),
+    ("(32|  H |68)", Sound(32, Some(GainVal.H), Some(68))),
+    ("(32||68)", Sound(32, None, Some(68))),
+    ("(|H|67)", Sound(1, Some(GainVal.H), Some(67))),
+    ("( 2|H|67)", Sound(2, Some(GainVal.H), Some(67))),
+    ("( 2  |H|67)", Sound(2, Some(GainVal.H), Some(67))),
+    ("(2|H|)", Sound(2, Some(GainVal.H), None)),
+    ("(2|H|66 )", Sound(2, Some(GainVal.H), Some(66))),
+    ("(2|H| 66 )", Sound(2, Some(GainVal.H), Some(66))),
   )
 
   for ((in, should) <- dataValidSounds) {
@@ -95,13 +95,13 @@ class ParserTest extends AnyFunSuite with Matchers {
   }
 
   val dataInvalidSounds = List(
-    ("(22|2|LLL)", "Must be one of"),
-    ("(22|2|LLM)", "Must be one of"),
-    ("(22|21|LL)", "Must be one of"),
-    ("(22|3|LL)", "Must be one of"),
-    ("(22|888|LL)", "Must be one of"),
-    ("(1|1|LL)", "Must be greater"),
-    ("(200|1|LL)", "Must be smaller"),
+    ("(2|LLL|22)", "Must be one of"),
+    ("(2|LLM|22)", "Must be one of"),
+    ("(21|LL|22)", "Must be one of"),
+    ("(3|LL|22)", "Must be one of"),
+    ("(888|LL|22)", "Must be one of"),
+    ("(1|LL|1)", "Must be greater"),
+    ("(1|LL|200)", "Must be smaller"),
   )
 
   for ((in, should) <- dataInvalidSounds) {
