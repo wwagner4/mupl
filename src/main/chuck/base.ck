@@ -79,7 +79,7 @@ class Melody {
         return nop;
     }
 
-    fun Sound pl(int midi, int duration, float gainFact) {
+    fun Sound pl(int duration, float gainFact, int midi) {
         <<<"pl(3) must be overwritten>">>>;
         return null;
     }
@@ -89,7 +89,7 @@ class SKMelody extends Melody {
 
     StifKarp _inst => ADSR _adsr => dac;
 
-    fun Sound pl(int midi, int duration, float gainFact) {
+    fun Sound pl(int duration, float gainFact, int midi) {
         SK sound;
         _inst @=> sound.inst;
         _adsr @=> sound.adsr;    
@@ -111,7 +111,7 @@ class BufMelody extends Melody {
         return null;
     }
 
-    fun Sound pl(int midi, int duration, float gainFact) {
+    fun Sound pl(int duration, float gainFact, int midi) {
         Buf sound;
         _inst @=> sound.inst;
         duration => sound.duration;
@@ -133,8 +133,8 @@ class SKMelody01 extends SKMelody {
 
     fun Sound[] sounds() {
         return [
-            nop(), pl(55, 1, 0.3),pl(58, 2, 1.0),pl(56, 2, 1.0),pl(59, 1, 0.3),pl(58, 2, 0.3),pl(58, 2, 0.3),
-            nop(), pl(55, 1, 0.3),pl(58, 2, 1.0),pl(56, 2, 1.0),pl(59, 1, 0.3),pl(58, 1, 0.3)
+            nop(), pl(1, 0.3, 55),pl(2, 1.0, 58),pl(2, 1.0, 56),pl(1, 0.3, 59),pl(2, 0.3, 58),pl(2, 0.3, 58),
+            nop(), pl(1, 0.3, 55),pl(2, 1.0, 58),pl(2, 1.0, 56),pl(1, 0.3, 59),pl(1, 0.3, 58)
         ];
     }
 
@@ -143,8 +143,8 @@ class SKMelody02 extends SKMelody {
 
     fun Sound[] sounds() {
         return [
-            pl(39, 1, 1.0), pa(1), pl(44, 1, 1.0), pa(1),
-            pl(39, 1, 1.0), pa(1), pl(44, 2, 0.3), pl(39, 2, 0.3), pa(1) 
+            pl(1, 1.0, 39), pa(1), pl(1, 1.0, 44), pa(1),
+            pl(1, 1.0, 39), pa(1), pl(2, 0.3, 44), pl(2, 0.3, 39), pa(1) 
         ];
     }
 
@@ -154,8 +154,8 @@ class GlotMelody01 extends BufGlotAhhMelody {
 
     fun Sound[] sounds() {
         return [
-            pl(55, 2, 1.0), pl(55, 2, 1.0), pl(55, 2, 1.0), pl(55, 2, 1.0), pl(55, 2, 1.0), pl(55, 2, 1.0), pl(55, 2, 1.0), pl(55, 4, 1.0), pl(55, 4, 1.0), 
-            pl(55, 2, 1.0), pl(55, 2, 1.0), pl(55, 2, 1.0), pl(55, 4, 1.0), pl(55, 4, 1.0), pl(55, 2, 1.0), pl(55, 2, 1.0), pl(55, 2, 1.0), pl(55, 2, 1.0) 
+            pl(2, 1.0, 55), pl(2, 1.0, 55), pl(2, 1.0, 55), pl(2, 1.0, 55), pl(2, 1.0, 55), pl(2, 1.0, 55), pl(2, 1.0, 55), pl(4, 1.0, 55), pl(4, 1.0, 55), 
+            pl(2, 1.0, 55), pl(2, 1.0, 55), pl(2, 1.0, 55), pl(4, 1.0, 55), pl(4, 1.0, 55), pl(2, 1.0, 55), pl(2, 1.0, 55), pl(2, 1.0, 55), pl(2, 1.0, 55) 
         ];
     }
 
