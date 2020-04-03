@@ -143,8 +143,8 @@ class SKMelody02 extends SKMelody {
 
     fun Sound[] sounds() {
         return [
-            pl(39, 1, 1.0),pa(1), pl(44, 1, 1.0), pa(1),
-            pl(39, 1, 1.0),pa(1), pl(44, 2, 0.3), pl(39, 2, 0.3), pa(1) 
+            pl(39, 1, 1.0), pa(1), pl(44, 1, 1.0), pa(1),
+            pl(39, 1, 1.0), pa(1), pl(44, 2, 0.3), pl(39, 2, 0.3), pa(1) 
         ];
     }
 
@@ -154,18 +154,18 @@ class GlotMelody01 extends BufGlotAhhMelody {
 
     fun Sound[] sounds() {
         return [
-            pl(55, 2,  1.0),pl(55, 2,  1.0),pl(55, 2,  1.0),pl(55, 2,  1.0),pl(55, 2, 1.0),pl(55, 2, 1.0),pl(55, 2, 1.0),pl(55, 4, 1.0),pl(55, 4, 1.0), 
-            pl(55, 2, 1.0),pl(55, 2, 1.0),pl(55, 2, 1.0),pl(55, 4, 1.0),pl(55, 4, 1.0),pl(55, 2, 1.0),pl(55, 2, 1.0),pl(55, 2, 1.0),pl(55, 2, 1.0) 
+            pl(55, 2, 1.0), pl(55, 2, 1.0), pl(55, 2, 1.0), pl(55, 2, 1.0), pl(55, 2, 1.0), pl(55, 2, 1.0), pl(55, 2, 1.0), pl(55, 4, 1.0), pl(55, 4, 1.0), 
+            pl(55, 2, 1.0), pl(55, 2, 1.0), pl(55, 2, 1.0), pl(55, 4, 1.0), pl(55, 4, 1.0), pl(55, 2, 1.0), pl(55, 2, 1.0), pl(55, 2, 1.0), pl(55, 2, 1.0) 
         ];
     }
 
 }
-class SilentMelody extends Melody {
+
+class SilentMelody extends SKMelody {
 
     fun Sound[] sounds() {
         return [
-            nop(), pa(1),pa(1), pa(1), pa(1),
-            pa(1),pa(1), pa(1), pa(1)
+            nop(), pa(1), pa(1), pa(1), pa(1), pa(1), pa(1), pa(1), pa(1)
         ];
     }
 
