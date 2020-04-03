@@ -6,10 +6,7 @@ class SKMelody01 extends SKMelody {
         ];
     }
 }
-
-fun void skMelody01() {
-    SKMelody01 m; m.play();
-}
+fun void skMelody01() {SKMelody01 m; m.play(); }
 
 skMelody01();
 1::second => now;
