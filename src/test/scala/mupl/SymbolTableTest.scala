@@ -6,7 +6,7 @@ import org.scalatest.matchers.must.Matchers
 class SymbolTableTest extends AnyFunSuite with Matchers {
 
   test("all valid") {
-    val all = MuplParser.parseAll(
+    val all = MuplParser.parseVariables(
       """
         |a = X[(||) (||) (||) (||) ]
         |b = {[a a a] [a a a]}
@@ -23,7 +23,7 @@ class SymbolTableTest extends AnyFunSuite with Matchers {
   }
 
   test("unknown symbol") {
-    val all = MuplParser.parseAll(
+    val all = MuplParser.parseVariables(
       """
         |a = X[(||) (||) (||) (||) ]
         |b = {[a a a] [a x a]}
@@ -39,7 +39,7 @@ class SymbolTableTest extends AnyFunSuite with Matchers {
   }
 
   test("duplicate symbol") {
-    val all = MuplParser.parseAll(
+    val all = MuplParser.parseVariables(
       """
         |a = X[(||) (||) (||) (||) ]
         |b = {[a a a] [a x a]}
@@ -55,7 +55,7 @@ class SymbolTableTest extends AnyFunSuite with Matchers {
   }
 
   test("loop for symbol") {
-    val all = MuplParser.parseAll(
+    val all = MuplParser.parseVariables(
       """
         |a = X[(||) (||) (||) (||) ]
         |b = {[a a a] [a c a]}

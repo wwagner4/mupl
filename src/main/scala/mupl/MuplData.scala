@@ -1,5 +1,7 @@
 package mupl
 
+import java.nio.file.{Files, Path, Paths}
+
 import mupl.GainVal.GainVal
 
 object GainVal extends Enumeration {
@@ -29,3 +31,51 @@ case class Sound(dur: Int,
                  pitch: Option[Int],
                 )
 
+case class Globals(chuckCall: String = "chuck",
+                   soundsFile: Path = Paths.get("src/main/chuck/sounds.ck"),
+                   muplDir: Path = Paths.get("src/main/mupl"),
+                   alldur: Int = 20,
+                   globalSpeedFact: Double = 1.0,
+                   globalGainFact: Double = 0.1
+                  )
+
+object Globals {
+
+  def parse(tuples: List[(String, String)]): Globals = {
+    _parse(tuples, Globals())
+  }
+
+  @scala.annotation.tailrec
+  private def _parse(tuples: List[(String, String)], g: Globals): Globals = {
+    def extend(key: String, strValue: String): Globals = {
+      key match {
+        case "chuckCall" => g.copy(chuckCall = strValue)
+        case "soundsFile" =>
+          val f = Paths.get(strValue)
+          if (Files.notExists(f)) throw new IllegalArgumentException(s"Path to sounds file does not exist: $strValue")
+          g.copy(soundsFile = f)
+        case "muplDir" =>
+          val f = Paths.get(strValue)
+          if (Files.notExists(f)) throw new IllegalArgumentException(s"Mupl dir does not exist: $strValue")
+          g.copy(muplDir = f)
+        case "alldur" =>
+          g.copy(alldur = strValue.toInt)
+        case "globalSpeedFact" =>
+          g.copy(globalSpeedFact = strValue.toDouble)
+        case "globalGainFact" =>
+          g.copy(globalGainFact = strValue.toDouble)
+        case _ =>
+          throw new IllegalArgumentException(s"Unknown key: $key")
+      }
+    }
+
+    tuples match {
+      case Nil => g
+      case (key, valueStr) :: rest => _parse(rest, extend(key, valueStr))
+    }
+  }
+}
+
+case class Piece(globals: Globals,
+                 variables: List[Variable]
+                )

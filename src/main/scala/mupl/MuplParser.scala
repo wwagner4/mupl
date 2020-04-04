@@ -6,7 +6,11 @@ import scala.util.parsing.combinator.RegexParsers
 
 object MuplParser extends RegexParsers {
 
-  def all: Parser[List[Variable]] = rep(variable) ~ ".*".r ^^ { case variables ~ rest=> 
+  def globals: Parser[Globals] = keyValue.* ^^ {ts => Globals.parse(ts)}
+  
+  def keyValue: Parser[(String, String)] = name ~ "=" ~ ".*".r ^^ {case key ~ _ ~ value => (key, value)}
+  
+  def variables: Parser[List[Variable]] = rep(variable) ~ ".*".r ^^ { case variables ~ rest=> 
     if (!rest.isEmpty) throw new IllegalArgumentException(s"There must be no rest. $rest")
     variables }
 
@@ -36,7 +40,9 @@ object MuplParser extends RegexParsers {
 
   def chunk: Parser[Chunk] = melo | symbol | sequence | parallel ^^ { chunk => chunk }
 
-  def parseAll(str: String): List[Variable] = handleParseError(str, parse(all, str))
+  def parseVariables(str: String): List[Variable] = handleParseError(str, parse(variables, str))
+
+  def parseGlobals(str: String): Globals = handleParseError(str, parse(globals, str))
 
   def parseVariable(str: String): Variable = handleParseError(str, parse(variable, str))
 

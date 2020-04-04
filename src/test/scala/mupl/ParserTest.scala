@@ -1,5 +1,7 @@
 package mupl
 
+import java.nio.file.Paths
+
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.must.Matchers
 
@@ -14,7 +16,7 @@ class ParserTest extends AnyFunSuite with Matchers {
         |       a y z
         |     ]}
         |""".stripMargin
-    val piece = MuplParser.parseAll(in)
+    val piece = MuplParser.parseVariables(in)
     piece.size mustBe 3
     piece.forall(_.isInstanceOf[Variable]) mustBe true
     val e1 = piece(0)
@@ -35,7 +37,7 @@ class ParserTest extends AnyFunSuite with Matchers {
       """
         |m1 = SK[(||)]
         |""".stripMargin
-    val piece = MuplParser.parseAll(in)
+    val piece = MuplParser.parseVariables(in)
     piece.size mustBe 1
     piece(0).chunk.getClass.getName mustBe "mupl.Melo"
   }
@@ -45,7 +47,7 @@ class ParserTest extends AnyFunSuite with Matchers {
       """
         |m2 = sk
         |""".stripMargin
-    val piece = MuplParser.parseAll(in)
+    val piece = MuplParser.parseVariables(in)
     piece.size mustBe 1
     piece(0).chunk.getClass.getName mustBe "mupl.Symbol"
   }
@@ -126,5 +128,20 @@ class ParserTest extends AnyFunSuite with Matchers {
     }
   }
 
-
+  test("globals simple") {
+    val g = MuplParser.parseGlobals("chuckCall = /opt/bin/chuck")
+    g.chuckCall mustBe "/opt/bin/chuck"
+  }
+  test("globals multi") {
+    val g = MuplParser.parseGlobals(
+      """
+        |chuckCall = /opt/bin/chuck
+        |soundsFile = src/main/chuck/play01.ck
+        |globalGainFact = 2.2
+        |""".stripMargin)
+    g.chuckCall mustBe "/opt/bin/chuck"
+    g.soundsFile mustBe Paths.get("src/main/chuck/play01.ck")
+    g.globalGainFact mustBe 2.2
+    
+  }
 }

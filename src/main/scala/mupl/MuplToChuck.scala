@@ -56,7 +56,7 @@ object MuplToChuck {
 
   def convert(path: Path): String = {
     val mupl = MuplUtil.fileToStr(path)
-    val vars: Seq[Variable] = MuplParser.parseAll(mupl)
+    val vars: Seq[Variable] = MuplParser.parseVariables(mupl)
     convertVars(vars)
   }
 }
