@@ -5,14 +5,16 @@ import mupl.GainVal.GainVal
 import scala.util.parsing.combinator.RegexParsers
 
 object MuplParser extends RegexParsers {
+  
+  def piece: Parser[Piece] = globals ~ variables ~ ".*".r ^^ {case g ~ v ~ rest => 
+    if (!rest.isEmpty) throw new IllegalArgumentException(s"There might be no rest after parsing: $rest")
+    Piece(g, v)}
 
   def globals: Parser[Globals] = keyValue.* ^^ {ts => Globals.parse(ts)}
   
-  def keyValue: Parser[(String, String)] = name ~ "=" ~ ".*".r ^^ {case key ~ _ ~ value => (key, value)}
+  def keyValue: Parser[(String, String)] = name ~ "<=" ~ ".*".r ^^ {case key ~ _ ~ value => (key, value)}
   
-  def variables: Parser[List[Variable]] = rep(variable) ~ ".*".r ^^ { case variables ~ rest=> 
-    if (!rest.isEmpty) throw new IllegalArgumentException(s"There must be no rest. $rest")
-    variables }
+  def variables: Parser[List[Variable]] = rep(variable) 
 
   def name: Parser[String] = """[a-zA-Z_][a-zA-Z0-9_]*""".r ^^ { nam => nam }
 
@@ -39,6 +41,9 @@ object MuplParser extends RegexParsers {
   }
 
   def chunk: Parser[Chunk] = melo | symbol | sequence | parallel ^^ { chunk => chunk }
+
+
+  def parsePiece(str: String): Piece = handleParseError(str, parse(piece, str))
 
   def parseVariables(str: String): List[Variable] = handleParseError(str, parse(variables, str))
 

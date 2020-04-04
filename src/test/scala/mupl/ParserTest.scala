@@ -129,19 +129,40 @@ class ParserTest extends AnyFunSuite with Matchers {
   }
 
   test("globals simple") {
-    val g = MuplParser.parseGlobals("chuckCall = /opt/bin/chuck")
+    val g = MuplParser.parseGlobals("chuckCall <= /opt/bin/chuck")
     g.chuckCall mustBe "/opt/bin/chuck"
   }
   test("globals multi") {
     val g = MuplParser.parseGlobals(
       """
-        |chuckCall = /opt/bin/chuck
-        |soundsFile = src/main/chuck/play01.ck
-        |globalGainFact = 2.2
+        |chuckCall <= /opt/bin/chuck
+        |globalGainFact <= 2.2
+        |soundsFile <= src/main/chuck/play01.ck
+        |
         |""".stripMargin)
     g.chuckCall mustBe "/opt/bin/chuck"
     g.soundsFile mustBe Paths.get("src/main/chuck/play01.ck")
     g.globalGainFact mustBe 2.2
     
+  }
+  
+  test("piece") {
+    val p = MuplParser.parsePiece(
+      """
+        |chuckCall <= /opt/bin/chuck
+        |globalGainFact <= 2.2
+        |
+        |a = [] 
+        |d = e
+        |x1 = {[
+        |       a y z
+        |     ]}
+        |""".stripMargin)
+    
+    p.globals.globalGainFact mustBe 2.2
+    p.globals.globalSpeedFact mustBe 1.0
+    p.globals.chuckCall mustBe "/opt/bin/chuck"
+    
+    p.variables.size mustBe 3
   }
 }
