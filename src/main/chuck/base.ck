@@ -1,29 +1,8 @@
-
 class Sound {
     fun void play() {
         <<<"play must be overwritten">>>;
     }
 }
-
-
-class SK extends Sound {
-    StifKarp @inst;
-    ADSR @adsr;
-    55 => int midi;
-    2 => int duration;
-    1.0 => float gainFact;
-    
-    fun void play() {
-        adsr.set( 10::ms, 8::ms, 1, 500::ms );
-        globalGainFact * gainFact => inst.noteOn;
-        Std.mtof(midi) => inst.freq;
-        adsr.keyOn();
-        globalSpeedFact / duration => float t;
-        t::second => now;
-        adsr.keyOff();
-    }
-}
-
 class Buf extends Sound {
     SndBuf @inst;
     2 => int duration;
@@ -35,7 +14,6 @@ class Buf extends Sound {
         t::second => now;
     }
 }
-
 class PA extends Sound {
     2 => int duration;
     
@@ -44,12 +22,10 @@ class PA extends Sound {
         t::second => now;
     }
 }
-
 class NOP extends Sound {
     fun void play() {
     }
 }
-
 class Melody {
 
     fun void play() {
@@ -81,23 +57,6 @@ class Melody {
         return null;
     }
 }
-
-class SKMelody extends Melody {
-
-    StifKarp _inst => ADSR _adsr => dac;
-
-    fun Sound pl(int duration, float gainFact, int midi) {
-        SK sound;
-        _inst @=> sound.inst;
-        _adsr @=> sound.adsr;    
-        midi => sound.midi;
-        duration => sound.duration;
-        gainFact => sound.gainFact;
-        return sound;
-    }
-
-}
-
 class BufMelody extends Melody {
 
     SndBuf _inst => dac;
@@ -116,11 +75,4 @@ class BufMelody extends Melody {
         return sound;
     }
 
-}
-
-class BufGlotAhhMelody extends BufMelody {
-
-    fun string name() {
-        return "glot_ahh";
-    }
 }

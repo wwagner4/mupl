@@ -22,13 +22,14 @@ class MuplPlayer {
     tmpFile
   }
 
-  def play(basePath: Path, playPath: Path, arg: String): Option[String] = {
+  def play(basePath: Path, soundsPath: Path, playPath: Path, arg: String): Option[String] = {
     pathExists(basePath)
+    pathExists(soundsPath)
     pathExists(playPath)
     val bstr = MuplUtil.fileToStr(basePath)
-//    val pstr = MuplUtil.fileToStr(playPath)
+    val sstr = MuplUtil.fileToStr(soundsPath)
     val pstr = MuplToChuck.convert(playPath)
-    val code = globals + bstr + "\n" + pstr
+    val code = globals + bstr + "\n" + sstr + "\n" + pstr
     val allp = strToPath(code)
     val cmd = s"$chuckPath ${allp.toString}:$arg"
     val stdout = new StringBuilder

@@ -20,7 +20,7 @@ object MuplToChuck {
       |        ];
       |    }
       |}
-      |class p1Melody extends BufGlotAhhMelody {
+      |class p1Melody extends GlotAhhMelody {
       |    fun Sound[] sounds() {
       |        return [ 
       |           nop(), pl(2, 1.0, 55), pl(2, 1.0, 55), pl(2, 1.0, 55), pl(2, 1.0, 55), pl(2, 1.0, 55), pl(2, 1.0, 55), pl(2, 1.0, 55), pl(4, 1.0, 55), pl(4, 1.0, 55), pl(2, 1.0, 55), pl(2, 1.0, 55), pl(2, 1.0, 55), pl(4, 1.0, 55), pl(4, 1.0, 55), pl(2, 1.0, 55), pl(2, 1.0, 55), pl(2, 1.0, 55), pl(2, 1.0, 55) 
