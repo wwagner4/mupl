@@ -38,6 +38,22 @@ class SymbolTableTest extends AnyFunSuite with Matchers {
 
   }
 
+  test("duplicate symbol") {
+    val all = MuplParser.parseAll(
+      """
+        |a = X[(||) (||) (||) (||) ]
+        |b = {[a a a] [a x a]}
+        |a = [a b]
+        |""".stripMargin)
+    val thrown = intercept[IllegalArgumentException] {
+      val st = SymbolTable(all)
+    }
+    val tm = thrown.getMessage
+    val should = "uplicate symbols"
+    if (!tm.contains(should)) fail(s"Message '$tm' must contain '$should'")
+
+  }
+
   test("loop for symbol") {
     val all = MuplParser.parseAll(
       """

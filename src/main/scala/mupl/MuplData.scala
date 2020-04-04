@@ -19,7 +19,7 @@ case class Variable(name: String,
 
 case class Symbol(name: String) extends Chunk
 
-case class Sequence(chunks: List[Chunk]
+case class Sequence(chunks: List[Symbol]
                    ) extends Chunk
 
 case class Parallel(sequences: List[Sequence]) extends Chunk

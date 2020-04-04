@@ -11,7 +11,7 @@ class ParserTest extends AnyFunSuite with Matchers {
         |a = [] 
         |d = e
         |x1 = {[
-        |       a A[(||)(||)(|LL|)(4||)]
+        |       a y z
         |     ]}
         |""".stripMargin
     val piece = MuplParser.parseAll(in)
@@ -58,18 +58,9 @@ class ParserTest extends AnyFunSuite with Matchers {
 
   test("parse sequence") {
     val seq: Sequence = MuplParser.parseSequence(
-      """[asd [a b c] {
-        |  [ A[(1||) ] 
-        |    B[(2||) (2||) (8||33) ] 
-        |    [a b c d e f g h] 
-        |  ]
-        |  []
-        |}]""".stripMargin)
-    seq.chunks.size.mustBe(3)
-    val s2 = seq.chunks(1).asInstanceOf[Sequence]
-    s2.chunks.size.mustBe(3)
-    val p = seq.chunks(2).asInstanceOf[Parallel]
-    p.sequences.size mustBe 2
+      """[a b c d e f g h] 
+        |""".stripMargin)
+    seq.chunks.size.mustBe(8)
   }
 
   test("parse melo") {

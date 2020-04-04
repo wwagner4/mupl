@@ -26,7 +26,7 @@ object MuplParser extends RegexParsers {
       case _ ~ a ~ _ ~ b ~ _ ~ c ~ _ => createSound(a, b, c)
     }
 
-  def sequence: Parser[Sequence] = "[" ~ rep(chunk) ~ "]" ^^ {
+  def sequence: Parser[Sequence] = "[" ~ symbol.* ~ "]" ^^ {
     case _ ~ chunks ~ _ => Sequence(chunks)
   }
 
