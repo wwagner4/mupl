@@ -4,7 +4,18 @@ import java.nio.file.Path
 
 object MuplToChuck {
 
-  def convertVars(vars: Seq[Variable]): String = {
+  def convert(globals: Globals): String = {
+    s"""
+      |${globals.alldur} => int alldur;
+      |${globals.globalSpeedFact} => float globalSpeedFact;
+      |${globals.globalGainFact} => float globalGainFact;
+      |
+      |""".stripMargin
+
+  }
+
+
+  def convert(vars: Seq[Variable]): String = {
     """
       |class m1Melody extends SKMelody {
       |    fun Sound[] sounds() {
@@ -54,9 +65,4 @@ object MuplToChuck {
       |}
       |""".stripMargin}
 
-  def convert(path: Path): String = {
-    val mupl = MuplUtil.fileToStr(path)
-    val vars: Seq[Variable] = MuplParser.parseVariables(mupl)
-    convertVars(vars)
-  }
 }
