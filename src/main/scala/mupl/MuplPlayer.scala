@@ -3,21 +3,11 @@ package mupl
 import java.io.PrintWriter
 import java.nio.file.{Files, Path, Paths}
 
-import scala.io.Source
 import scala.sys.process._
 
 class MuplPlayer {
 
   val chuckPath = "chuck"
-
-  def fileToStr(path: Path): String = {
-    val src = Source.fromFile(path.toFile)
-    try {
-      src.getLines.mkString
-    } finally {
-      src.close()
-    }
-  }
 
   def strToPath(content: String): Path = {
     val tmpFile = Path.of(System.getProperty("java.io.tmpdir")).resolve("all.ck")
@@ -28,8 +18,8 @@ class MuplPlayer {
   def play(basePath: Path, playPath: Path): Option[String] = {
     pathExists(basePath)
     pathExists(playPath)
-    val bstr = fileToStr(basePath)
-    val pstr = fileToStr(playPath)
+    val bstr = MuplUtil.fileToStr(basePath)
+    val pstr = MuplToChuck.convert(playPath)
     val all = bstr + "\n" + pstr
     val allp = strToPath(all)
     val cmd = s"$chuckPath ${allp.toString}"
@@ -55,9 +45,4 @@ class MuplPlayer {
     if (sb.isEmpty) None else Some(sb.toString())
   }
 
-  private def pr(valu: StringBuilder): Unit = {
-    val v = valu.toString()
-    if (v.nonEmpty)
-      println(s"$v")
-  }
 }

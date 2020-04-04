@@ -1,12 +1,15 @@
 package mupl
 
+import com.sun.tools.javac.parser.Tokens
 import mupl.GainVal.GainVal
 
 import scala.util.parsing.combinator.RegexParsers
 
 object MuplParser extends RegexParsers {
 
-  def all: Parser[List[Variable]] = rep(variable) ^^ { variables => variables }
+  def all: Parser[List[Variable]] = variable.+ ~ ".*".r ^^ { case variables ~ rest => 
+    if (!rest.isEmpty) throw new IllegalStateException(s"There must be no rest. $rest")
+    else variables }
 
   def name: Parser[String] = """[a-zA-Z_][a-zA-Z0-9_]*""".r ^^ { nam => nam }
 
@@ -15,8 +18,8 @@ object MuplParser extends RegexParsers {
   def melo: Parser[Melo] =
     name ~ "[" ~ rep(sound) ~ "]" ^^ { case name ~ _ ~ sounds ~ _ => Melo(name, sounds) }
 
-  def variable: Parser[Variable] = name ~ "=" ~ chunk ^^ {
-    case name ~ _ ~ chunk => Variable(name, chunk)
+  def variable: Parser[Variable] = name ~ "=" ~ chunk ~ ";" ^^ {
+    case name ~ _ ~ chunk ~ _=> Variable(name, chunk)
   }
 
   def sound: Parser[Sound] =
@@ -46,7 +49,8 @@ object MuplParser extends RegexParsers {
 
   private def handleParseError[T](str: String, result: ParseResult[T]): T = {
     result match {
-      case Success(out, _) => out
+      case Success(out, _) => 
+        out
       case Failure(a, b) => throw new IllegalStateException(s"FAILURE could not parse '$str'. $a. ${b.pos})")
       case Error(a, b) => throw new IllegalStateException(s"ERROR could not parse '$str'. $a. ${b.pos})")
     }
