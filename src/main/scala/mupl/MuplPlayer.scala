@@ -8,6 +8,13 @@ import scala.sys.process._
 class MuplPlayer {
 
   val chuckPath = "chuck"
+  val globals: String =
+    """
+      |20 => int alldur;
+      |1.2 => float globalSpeedFact;
+      |0.1 => float globalGainFact;
+      |
+      |""".stripMargin
 
   def strToPath(content: String): Path = {
     val tmpFile = Path.of(System.getProperty("java.io.tmpdir")).resolve("all.ck")
@@ -19,10 +26,9 @@ class MuplPlayer {
     pathExists(basePath)
     pathExists(playPath)
     val bstr = MuplUtil.fileToStr(basePath)
-    val pstr = MuplUtil.fileToStr(playPath)
-//    val pstr = MuplToChuck.convert(playPath)
-//    val all = bstr + "\n" + pstr
-    val code = bstr + "\n" + pstr
+//    val pstr = MuplUtil.fileToStr(playPath)
+    val pstr = MuplToChuck.convert(playPath)
+    val code = globals + bstr + "\n" + pstr
     val allp = strToPath(code)
     val cmd = s"$chuckPath ${allp.toString}:$arg"
     val stdout = new StringBuilder

@@ -65,7 +65,7 @@ fun void par() {
     spork ~ par03();
 }
 
-20 => int alldur;
+
 
 if (me.args() != 1) {
     <<<"one argument must be defined" >>>;

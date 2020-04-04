@@ -5,37 +5,6 @@ class Sound {
     }
 }
 
-
-class SK extends Sound {
-    StifKarp @inst;
-    ADSR @adsr;
-    55 => int midi;
-    2 => int duration;
-    1.0 => float gainFact;
-    
-    fun void play() {
-        adsr.set( 10::ms, 8::ms, 1, 500::ms );
-        globalGainFact * gainFact => inst.noteOn;
-        Std.mtof(midi) => inst.freq;
-        adsr.keyOn();
-        globalSpeedFact / duration => float t;
-        t::second => now;
-        adsr.keyOff();
-    }
-}
-
-class Buf extends Sound {
-    SndBuf @inst;
-    2 => int duration;
-    1.0 => float gainFact;
-    
-    fun void play() {
-        0 => inst.pos;
-        globalSpeedFact / duration => float t;
-        t::second => now;
-    }
-}
-
 class PA extends Sound {
     2 => int duration;
     
@@ -82,6 +51,36 @@ class Melody {
     }
 }
 
+class SK extends Sound {
+    StifKarp @inst;
+    ADSR @adsr;
+    55 => int midi;
+    2 => int duration;
+    1.0 => float gainFact;
+    
+    fun void play() {
+        adsr.set( 10::ms, 8::ms, 1, 500::ms );
+        globalGainFact * gainFact => inst.noteOn;
+        Std.mtof(midi) => inst.freq;
+        adsr.keyOn();
+        globalSpeedFact / duration => float t;
+        t::second => now;
+        adsr.keyOff();
+    }
+}
+
+class Buf extends Sound {
+    SndBuf @inst;
+    2 => int duration;
+    1.0 => float gainFact;
+    
+    fun void play() {
+        0 => inst.pos;
+        globalSpeedFact / duration => float t;
+        t::second => now;
+    }
+}
+
 class SKMelody extends Melody {
 
     StifKarp _inst => ADSR _adsr => dac;
@@ -124,3 +123,4 @@ class BufGlotAhhMelody extends BufMelody {
         return "glot_ahh";
     }
 }
+
