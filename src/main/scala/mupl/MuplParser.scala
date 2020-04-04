@@ -27,10 +27,17 @@ object MuplParser extends RegexParsers {
     case name ~ _ ~ chunk => Variable(name, chunk)
   }
 
-  def sound: Parser[Sound] =
+  def inst: Parser[Sound] =
     "(" ~ """(0|[1-9]\d*)|\s*""".r ~ "|" ~ """[A-Z]+|\s*""".r ~ "|" ~ """(0|[1-9]\d*)|\s*""".r ~ ")" ^^ {
-      case _ ~ a ~ _ ~ b ~ _ ~ c ~ _ => createSound(a, b, c)
+      case _ ~ a ~ _ ~ b ~ _ ~ c ~ _ => createInst(a, b, c)
     }
+
+  def pause: Parser[Sound] =
+    "#(" ~ """(0|[1-9]\d*)|\s*""".r ~ ")" ^^ {
+      case _ ~ a ~ _ => createPause(a)
+    }
+  
+  def sound: Parser[Sound] = pause | inst
 
   def sequence: Parser[Sequence] = "[" ~ symbol.* ~ "]" ^^ {
     case _ ~ chunks ~ _ => Sequence(chunks)
@@ -65,7 +72,7 @@ object MuplParser extends RegexParsers {
     }
   }
 
-  private def createSound(a: String, b: String, c: String): Sound = {
+  private def createInst(a: String, b: String, c: String): Inst = {
 
     val input = s"($a|$b|$c)"
 
@@ -86,23 +93,6 @@ object MuplParser extends RegexParsers {
       }
     }
 
-    val validDurations = List(1, 2, 4, 8, 32, 64)
-
-    def toDuration(value: String): Int = {
-      val valt = value.trim
-      try {
-        val dur = if (valt.isEmpty) 1 else valt.toInt
-        if (!validDurations.contains(dur)) {
-          val durStr = validDurations.mkString(", ")
-          throw new IllegalArgumentException(s"$input does not contain a valid duration. Must be one of $durStr")
-        }
-        dur
-      } catch {
-        case _: NumberFormatException =>
-          throw new IllegalArgumentException(s"$input does not contain a valid duration. Must be an integer")
-      }
-    }
-
     def toGain(value: String): Option[GainVal] = {
       val valt = value.trim
       try {
@@ -115,7 +105,33 @@ object MuplParser extends RegexParsers {
       }
     }
 
-    Sound(toDuration(a), toGain(b), toPitch(c))
+    Inst(toDuration(a, input), toGain(b), toPitch(c))
   }
+
+  private def createPause(a: String): Pause = {
+
+    val input = s"#($a)"
+
+    Pause(toDuration(a, input))
+  }
+
+  private val validDurations = List(1, 2, 4, 8, 32, 64)
+
+  private def toDuration(value: String, input: String): Int = {
+    val valt = value.trim
+    try {
+      val dur = if (valt.isEmpty) 1 else valt.toInt
+      if (!validDurations.contains(dur)) {
+        val durStr = validDurations.mkString(", ")
+        throw new IllegalArgumentException(s"$input does not contain a valid duration. Must be one of $durStr")
+      }
+      dur
+    } catch {
+      case _: NumberFormatException =>
+        throw new IllegalArgumentException(s"$input does not contain a valid duration. Must be an integer")
+    }
+  }
+
+
 
 }

@@ -2,7 +2,6 @@
 Programming language for composing music pieces
 
 ### TODO
-* Make Break (Sound)
 * Metainfo for sounds files (List of sounds)
 * Make GUI
 * Calculate length of sequences
@@ -10,4 +9,5 @@ Programming language for composing music pieces
 
 ### Done
 * Remove / Rename SymbolTable to Validator
+* Make Pause (Sound)
 

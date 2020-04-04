@@ -26,10 +26,15 @@ case class Sequence(chunks: List[Symbol]
 
 case class Parallel(sequences: List[Sequence]) extends Chunk
 
-case class Sound(dur: Int,
-                 gain: Option[GainVal],
-                 pitch: Option[Int],
-                )
+sealed trait Sound
+
+case class Inst(dur: Int,
+                gain: Option[GainVal],
+                pitch: Option[Int],
+               ) extends Sound
+
+case class Pause(dur: Int,
+               ) extends Sound
 
 case class Globals(chuckCall: String = "chuck",
                    soundsFile: Path = Paths.get("src/main/chuck/sounds.ck"),

@@ -88,11 +88,16 @@ object MuplToChuck {
         }
       }
 
-
-      val dur = sound.dur
-      val gain = mapGain(sound.gain)
-      val pitch = mapPitch(sound.pitch)
-      s"""pl($dur, $gain, $pitch)"""
+      sound match {
+        case i: Inst =>
+          val dur = i.dur
+          val gain = mapGain(i.gain)
+          val pitch = mapPitch(i.pitch)
+          s"""pl($dur, $gain, $pitch)"""
+        case b: Pause =>
+          val dur = b.dur
+          s"""pa($dur)"""
+      }
     }
 
     def melos: String = {

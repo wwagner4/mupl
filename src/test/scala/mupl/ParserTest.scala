@@ -70,40 +70,42 @@ class ParserTest extends AnyFunSuite with Matchers {
     melo.name.mustBe("m1")
     melo.sounds.size.mustBe(3)
 
-    melo.sounds(0).pitch.mustBe(Some(55))
-    melo.sounds(1).pitch.mustBe(Some(55))
-    melo.sounds(2).pitch.mustBe(Some(77))
+    melo.sounds(0).asInstanceOf[Inst].pitch.mustBe(Some(55))
+    melo.sounds(1).asInstanceOf[Inst].pitch.mustBe(Some(55))
+    melo.sounds(2).asInstanceOf[Inst].pitch.mustBe(Some(77))
 
-    melo.sounds(0).dur.mustBe(2)
-    melo.sounds(1).dur.mustBe(4)
-    melo.sounds(2).dur.mustBe(2)
+    melo.sounds(0).asInstanceOf[Inst].dur.mustBe(2)
+    melo.sounds(1).asInstanceOf[Inst].dur.mustBe(4)
+    melo.sounds(2).asInstanceOf[Inst].dur.mustBe(2)
 
-    melo.sounds(0).gain.mustBe(Some(GainVal.M))
-    melo.sounds(1).gain.mustBe(Some(GainVal.M))
-    melo.sounds(2).gain.mustBe(Some(GainVal.LL))
+    melo.sounds(0).asInstanceOf[Inst].gain.mustBe(Some(GainVal.M))
+    melo.sounds(1).asInstanceOf[Inst].gain.mustBe(Some(GainVal.M))
+    melo.sounds(2).asInstanceOf[Inst].gain.mustBe(Some(GainVal.LL))
 
   }
 
   val dataValidSounds = List(
-    ("(2|M|22)", Sound(2, Some(GainVal.M), Some(22))),
-    ("(64|LL|21)", Sound(64, Some(GainVal.LL), Some(21))),
-    ("(1|HH|108)", Sound(1, Some(GainVal.HH), Some(108))),
-    ("(1|H|108)", Sound(1, Some(GainVal.H), Some(108))),
-    ("(32|H|108)", Sound(32, Some(GainVal.H), Some(108))),
-    ("(32|H|67)", Sound(32, Some(GainVal.H), Some(67))),
-    ("(32|H |68)", Sound(32, Some(GainVal.H), Some(68))),
-    ("(32|  H |68)", Sound(32, Some(GainVal.H), Some(68))),
-    ("(32||68)", Sound(32, None, Some(68))),
-    ("(|H|67)", Sound(1, Some(GainVal.H), Some(67))),
-    ("( 2|H|67)", Sound(2, Some(GainVal.H), Some(67))),
-    ("( 2  |H|67)", Sound(2, Some(GainVal.H), Some(67))),
-    ("(2|H|)", Sound(2, Some(GainVal.H), None)),
-    ("(2|H|66 )", Sound(2, Some(GainVal.H), Some(66))),
-    ("(2|H| 66 )", Sound(2, Some(GainVal.H), Some(66))),
+    ("(2|M|22)", Inst(2, Some(GainVal.M), Some(22))),
+    ("(64|LL|21)", Inst(64, Some(GainVal.LL), Some(21))),
+    ("(1|HH|108)", Inst(1, Some(GainVal.HH), Some(108))),
+    ("(1|H|108)", Inst(1, Some(GainVal.H), Some(108))),
+    ("(32|H|108)", Inst(32, Some(GainVal.H), Some(108))),
+    ("(32|H|67)", Inst(32, Some(GainVal.H), Some(67))),
+    ("(32|H |68)", Inst(32, Some(GainVal.H), Some(68))),
+    ("(32|  H |68)", Inst(32, Some(GainVal.H), Some(68))),
+    ("(32||68)", Inst(32, None, Some(68))),
+    ("(|H|67)", Inst(1, Some(GainVal.H), Some(67))),
+    ("( 2|H|67)", Inst(2, Some(GainVal.H), Some(67))),
+    ("( 2  |H|67)", Inst(2, Some(GainVal.H), Some(67))),
+    ("(2|H|)", Inst(2, Some(GainVal.H), None)),
+    ("(2|H|66 )", Inst(2, Some(GainVal.H), Some(66))),
+    ("(2|H| 66 )", Inst(2, Some(GainVal.H), Some(66))),
+    ("#(2)", Pause(2)),
+    ("#(8)", Pause(8)),
   )
 
   for ((in, should) <- dataValidSounds) {
-    test(s"parse mupl.Sound $in") {
+    test(s"parse mupl.Inst $in") {
       MuplParser.parseSound(in).mustBe(should)
     }
   }
@@ -119,7 +121,7 @@ class ParserTest extends AnyFunSuite with Matchers {
   )
 
   for ((in, should) <- dataInvalidSounds) {
-    test(s"parse invalid mupl.Sound $in") {
+    test(s"parse invalid mupl.Inst $in") {
       val thrown = intercept[Exception] {
         MuplParser.parseSound(in)
       }
