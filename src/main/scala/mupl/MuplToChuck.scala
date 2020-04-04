@@ -15,8 +15,8 @@ object MuplToChuck {
   }
 
   def convert(vars: List[Variable]): String = {
-    val st = SymbolTable(vars)
-    val sb = _convert(vars, new StringBuilder, st)
+    VariableValidator.validate(vars)
+    val sb = _convert(vars, new StringBuilder)
     val names = vars.map { v => v.name }
     sb.append(
       s"""
@@ -35,6 +35,7 @@ object MuplToChuck {
 
   def argStarters(names: List[String]): String = {
     names match {
+      case Nil => throw new IllegalArgumentException("At least one variable must be defined")  
       case _ :: rest => rest.map(argStarter).mkString("\n")
     }
   }
@@ -45,16 +46,16 @@ object MuplToChuck {
   }
 
   @scala.annotation.tailrec
-  def _convert(vars: List[Variable], builder: StringBuilder, st: SymbolTable): StringBuilder = {
+  def _convert(vars: List[Variable], builder: StringBuilder): StringBuilder = {
     vars match {
       case Nil => builder
       case vari :: rest =>
-        builder.append(str(vari, st))
-        _convert(rest, builder, st)
+        builder.append(str(vari))
+        _convert(rest, builder)
     }
   }
 
-  def strSym(sym: Symbol, name: String, st: SymbolTable): String = {
+  def strSym(sym: Symbol, name: String): String = {
     s"""
       |
       |fun void $name() {
@@ -63,7 +64,7 @@ object MuplToChuck {
       |""".stripMargin
   }
 
-  def strMelo(melo: Melo, name: String, st: SymbolTable): String = {
+  def strMelo(melo: Melo, name: String): String = {
 
     def soundToString(sound: Sound): String = {
 
@@ -115,7 +116,7 @@ object MuplToChuck {
        |""".stripMargin
   }
 
-  def strSeq(seq: Sequence, name: String, st: SymbolTable): String = {
+  def strSeq(seq: Sequence, name: String): String = {
     val calls = seq.chunks.map(s => s"""${s.name}();""").mkString(" ")
     s"""
        |fun void $name() {
@@ -162,19 +163,19 @@ object MuplToChuck {
     
   }
 
-  def strPar(par: Parallel, name: String, st: SymbolTable): String = {
+  def strPar(par: Parallel, name: String): String = {
     val sb = new StringBuilder
     val fnams = parFunctions(par, name, sb)
     parFunction(fnams, name, sb)
     sb.toString()
   }
 
-  def str(vari: Variable, st: SymbolTable): String = {
+  def str(vari: Variable): String = {
     vari.chunk match {
-      case c: Symbol => strSym(c, vari.name, st)
-      case c: Melo => strMelo(c, vari.name, st)
-      case c: Sequence => strSeq(c, vari.name, st)
-      case c: Parallel => strPar(c, vari.name, st)
+      case c: Symbol => strSym(c, vari.name)
+      case c: Melo => strMelo(c, vari.name)
+      case c: Sequence => strSeq(c, vari.name)
+      case c: Parallel => strPar(c, vari.name)
     }
   }
 }

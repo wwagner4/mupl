@@ -3,7 +3,7 @@ package mupl
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.must.Matchers
 
-class SymbolTableTest extends AnyFunSuite with Matchers {
+class VariableValidatorTest extends AnyFunSuite with Matchers {
 
   test("all valid") {
     val all = MuplParser.parseVariables(
@@ -13,13 +13,7 @@ class SymbolTableTest extends AnyFunSuite with Matchers {
         |c = [a b]
         |""".stripMargin)
 
-    val st = SymbolTable(all)
-    val a = st.chunk("a")
-    val b = st.chunk("b")
-    val c = st.chunk("c")
-    a.isInstanceOf[Melo] mustBe true
-    b.isInstanceOf[Parallel] mustBe true
-    c.isInstanceOf[Sequence] mustBe true
+    VariableValidator.validate(all)
   }
 
   test("unknown symbol") {
@@ -30,7 +24,7 @@ class SymbolTableTest extends AnyFunSuite with Matchers {
         |c = [a b]
         |""".stripMargin)
     val thrown = intercept[IllegalArgumentException] {
-      val st = SymbolTable(all)
+      VariableValidator.validate(all)
     }
     val tm = thrown.getMessage
     val should = "ndfeined symbol"
@@ -46,7 +40,7 @@ class SymbolTableTest extends AnyFunSuite with Matchers {
         |a = [a b]
         |""".stripMargin)
     val thrown = intercept[IllegalArgumentException] {
-      val st = SymbolTable(all)
+      VariableValidator.validate(all)
     }
     val tm = thrown.getMessage
     val should = "uplicate symbols"
@@ -62,7 +56,7 @@ class SymbolTableTest extends AnyFunSuite with Matchers {
         |c = [a b]
         |""".stripMargin)
     val thrown = intercept[IllegalArgumentException] {
-      val st = SymbolTable(all)
+      VariableValidator.validate(all)
     }
     val tm = thrown.getMessage
     val should = "Loop for symbol"
