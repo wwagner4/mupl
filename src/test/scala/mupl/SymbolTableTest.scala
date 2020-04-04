@@ -8,9 +8,9 @@ class SymbolTableTest extends AnyFunSuite with Matchers {
   test("all valid") {
     val all = MuplParser.parseAll(
       """
-        |a = X[(||) (||) (||) (||) ];
-        |b = {[a a a] [a a a]};
-        |c = [a b];
+        |a = X[(||) (||) (||) (||) ]
+        |b = {[a a a] [a a a]}
+        |c = [a b]
         |""".stripMargin)
 
     val st = SymbolTable(all)
@@ -25,9 +25,9 @@ class SymbolTableTest extends AnyFunSuite with Matchers {
   test("unknown symbol") {
     val all = MuplParser.parseAll(
       """
-        |a = X[(||) (||) (||) (||) ];
-        |b = {[a a a] [a x a]};
-        |c = [a b];
+        |a = X[(||) (||) (||) (||) ]
+        |b = {[a a a] [a x a]}
+        |c = [a b]
         |""".stripMargin)
     val thrown = intercept[IllegalArgumentException] {
       val st = SymbolTable(all)
@@ -41,9 +41,9 @@ class SymbolTableTest extends AnyFunSuite with Matchers {
   test("loop for symbol") {
     val all = MuplParser.parseAll(
       """
-        |a = X[(||) (||) (||) (||) ];
-        |b = {[a a a] [a c a]};
-        |c = [a b];
+        |a = X[(||) (||) (||) (||) ]
+        |b = {[a a a] [a c a]}
+        |c = [a b]
         |""".stripMargin)
     val thrown = intercept[IllegalArgumentException] {
       val st = SymbolTable(all)

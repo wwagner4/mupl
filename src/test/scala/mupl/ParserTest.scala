@@ -8,11 +8,11 @@ class ParserTest extends AnyFunSuite with Matchers {
   test("all") {
     val in: String =
       """
-        |a = []; 
-        |d = e;
+        |a = [] 
+        |d = e
         |x1 = {[
         |       a A[(||)(||)(|LL|)(4||)]
-        |     ]};
+        |     ]}
         |""".stripMargin
     val piece = MuplParser.parseAll(in)
     piece.size mustBe 3
@@ -33,7 +33,7 @@ class ParserTest extends AnyFunSuite with Matchers {
   test("all one melody") {
     val in: String =
       """
-        |m2 = sk[(||)];
+        |m1 = SK[(||)]
         |""".stripMargin
     val piece = MuplParser.parseAll(in)
     piece.size mustBe 1
@@ -43,7 +43,7 @@ class ParserTest extends AnyFunSuite with Matchers {
   test("all one symbol") {
     val in: String =
       """
-        |m2 = sk;
+        |m2 = sk
         |""".stripMargin
     val piece = MuplParser.parseAll(in)
     piece.size mustBe 1
@@ -51,10 +51,9 @@ class ParserTest extends AnyFunSuite with Matchers {
   }
 
   test("variable") {
-    val v = MuplParser.parseVariable("a = {};")
-    v.isInstanceOf[Variable] mustBe true
-    val p = v.chunk.asInstanceOf[Parallel]
-    p.sequences.isEmpty mustBe true    
+    val v = MuplParser.parseVariable("a = {}")
+    v.name mustBe "a"
+    v.chunk.getClass.getName mustBe "mupl.Parallel"
   }
 
   test("parse sequence") {

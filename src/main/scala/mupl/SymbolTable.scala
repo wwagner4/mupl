@@ -11,10 +11,10 @@ case class SymbolTable(variables: List[Variable]) {
     val symbols = variables.map(_.name)
     val topSeq = Sequence(variables.map(_.chunk))
     val check = checkSymDefined(symbols) _
-    walk(check, topSeq)
+    MuplUtil.walk(check, topSeq)
     map.keys.foreach { k =>
       val checkSym = checkContainsSymbol(k) _
-      walk(checkSym, chunk(k), deep = true)
+      MuplUtil.walk(checkSym, chunk(k), symbolMap = Some(map))
     }
   }
 
@@ -35,16 +35,6 @@ case class SymbolTable(variables: List[Variable]) {
         throw new IllegalArgumentException(s"Undfeined symbol $sn. must be one of $sstr")
       }
       case _ => // Nothing to do  
-    }
-  }
-
-  private def walk(f: Chunk => Unit, chunk: Chunk, deep: Boolean = false): Unit = {
-    f(chunk)
-    chunk match {
-      case seq: Sequence => seq.chunks.foreach(c => walk(f, c, deep))
-      case par: Parallel => par.sequences.foreach(c => walk(f, c, deep))
-      case symbol: Symbol if deep => walk(f, map(symbol.name), deep)
-      case _ => // nothing to do  
     }
   }
 
