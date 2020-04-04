@@ -19,9 +19,12 @@ class MuplPlayer {
     pathExists(basePath)
     pathExists(playPath)
     val bstr = MuplUtil.fileToStr(basePath)
-    val pstr = MuplToChuck.convert(playPath)
-    val all = bstr + "\n" + pstr
-    val allp = strToPath(all)
+    val pstr = MuplUtil.fileToStr(playPath)
+//    val pstr = MuplToChuck.convert(playPath)
+//    val all = bstr + "\n" + pstr
+    val code = bstr + "\n" + pstr
+    println(code)
+    val allp = strToPath(code)
     val cmd = s"$chuckPath ${allp.toString}"
     val stdout = new StringBuilder
     val stderr = new StringBuilder

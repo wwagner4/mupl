@@ -9,7 +9,7 @@ object MuplUtil {
   def fileToStr(path: Path): String = {
     val src = Source.fromFile(path.toFile)
     try {
-      src.getLines.mkString
+      src.getLines.mkString("\n")
     } finally {
       src.close()
     }
