@@ -33,27 +33,39 @@ class p1Melody extends BufGlotAhhMelody {
 fun void m1() {
     m1Melody m;
     m.play();
-    m.play();
-    1::second => now;
 }
 
 fun void m2() {
     m2Melody m;
     m.play();
-    m.play();
-    1::second => now;
 }
 
 fun void p1() {
     p1Melody m;
     m.play();
-    m.play();
-    1::second => now;
 }
 
-spork ~ m1();
-spork ~ m2();
-spork ~ p1();
+fun void par01() {
+    m1();
+    m1();
+}
+fun void par02() {
+    m2();
+    m2();
+}
+
+fun void par03() {
+    p1();
+    p1();
+}
+
+fun void par() {
+    spork ~ par01();
+    spork ~ par02();
+    spork ~ par03();
+}
+
+par();
 20::second => now;
 
 
