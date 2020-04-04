@@ -1,4 +1,4 @@
-class SKMelody01 extends SKMelody {
+class m1Melody extends SKMelody {
 
     fun Sound[] sounds() {
         return [
@@ -8,7 +8,7 @@ class SKMelody01 extends SKMelody {
     }
 
 }
-class SKMelody02 extends SKMelody {
+class m2Melody extends SKMelody {
 
     fun Sound[] sounds() {
         return [
@@ -19,7 +19,7 @@ class SKMelody02 extends SKMelody {
 
 }
 
-class GlotMelody01 extends BufGlotAhhMelody {
+class p1Melody extends BufGlotAhhMelody {
 
     fun Sound[] sounds() {
         return [
@@ -30,32 +30,22 @@ class GlotMelody01 extends BufGlotAhhMelody {
 
 }
 
-class SilentMelody extends SKMelody {
-
-    fun Sound[] sounds() {
-        return [
-            nop(), pa(1), pa(1), pa(1), pa(1), pa(1), pa(1), pa(1), pa(1)
-        ];
-    }
-
-}
-
 fun void m1() {
-    SKMelody01 m;
+    m1Melody m;
     m.play();
     m.play();
     1::second => now;
 }
 
 fun void m2() {
-    SKMelody02 m;
+    m2Melody m;
     m.play();
     m.play();
     1::second => now;
 }
 
-fun void m3() {
-    GlotMelody01 m;
+fun void p1() {
+    p1Melody m;
     m.play();
     m.play();
     1::second => now;
@@ -63,7 +53,7 @@ fun void m3() {
 
 spork ~ m1();
 spork ~ m2();
-m3();
-1::second => now;
+spork ~ p1();
+20::second => now;
 
 
