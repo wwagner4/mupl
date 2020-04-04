@@ -15,6 +15,16 @@ object MuplUtil {
     }
   }
 
+  def resToStr(path: String): String = {
+    val is = getClass.getClassLoader.getResourceAsStream(path)
+    val src = Source.fromInputStream(is)
+    try {
+      src.getLines.mkString("\n")
+    } finally {
+      src.close()
+    }
+  }
+
   def walk(f: Chunk => Unit, chunk: Chunk, symbolMap: Option[Map[String, Chunk]] = None): Unit = {
     f(chunk)
     chunk match {

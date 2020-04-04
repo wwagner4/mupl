@@ -22,11 +22,10 @@ class MuplPlayer {
     tmpFile
   }
 
-  def play(basePath: Path, soundsPath: Path, playPath: Path, arg: String): Option[String] = {
-    pathExists(basePath)
+  def play(soundsPath: Path, playPath: Path, arg: String): Option[String] = {
     pathExists(soundsPath)
     pathExists(playPath)
-    val bstr = MuplUtil.fileToStr(basePath)
+    val bstr = MuplUtil.resToStr("base.ck")
     val sstr = MuplUtil.fileToStr(soundsPath)
     val pstr = MuplToChuck.convert(playPath)
     val code = globals + bstr + "\n" + sstr + "\n" + pstr
