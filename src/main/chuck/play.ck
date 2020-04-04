@@ -65,7 +65,19 @@ fun void par() {
     spork ~ par03();
 }
 
-par();
-20::second => now;
+20 => int alldur;
+
+if (me.args() != 1) {
+    <<<"one argument must be defined" >>>;
+} else {
+   me.arg(0) => string arg;
+   if (arg == "m1") {m1();alldur::second => now;}
+   else if (arg == "m2") {m2();alldur::second => now;}
+   else if (arg == "p1") {p1();alldur::second => now;}
+   else if (arg == "par") {par();alldur::second => now;}
+   else {<<<"unknown argument", arg>>>;}
+}
+
+
 
 
