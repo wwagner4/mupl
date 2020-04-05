@@ -9,7 +9,7 @@ object MuplPlayerTryout extends App {
   val logger = LoggerFactory.getLogger("tryout")
 
   val dir = Path.of("src", "main")
-  val muplFile = dir.resolve("mupl").resolve("p1.mupl")
+  val muplFile = dir.resolve("mupl").resolve("p2.mupl")
   val player = new MuplPlayer
   val arg = "play"
   logger.info(s"Starting ${muplFile.toString} $arg")
