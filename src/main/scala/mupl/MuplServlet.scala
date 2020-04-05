@@ -9,35 +9,46 @@ import scala.jdk.CollectionConverters._
 
 class MuplServlet extends ScalatraServlet {
 
-  private val logger = LoggerFactory.getLogger("tryout")
+  private val logger = LoggerFactory.getLogger("servlet")
 
-  private val _muplDir: Path = Paths.get("/Users/wwagner4/prj/music/mupl/src/main/mupl")
+  private val _muplDir: Path = Paths.get("/Users/wwagner4/prj/music/mupl/src/main/mupl1")
   private var _selectedMuplFile = Option.empty[String]
+  private val _player = new MuplPlayer
 
 
   get("/") {
     contentType = "text/html"
-    bodyCreate
+    bodyCreate(None)
   }
-  
+
 
   get("/action/:file") {
     contentType = "text/html"
     val file = params("file")
     logger.info(s"Clicked on $file")
     _selectedMuplFile = Some(file)
-    bodyCreate
-  }
-  
-  post("/play") {
-    contentType = "text/html"
-    logger.info("Clicked the play button")
-    val txt: String = params("mupl")
-    logger.info(s"Clicked the play button\n$txt")
-    bodyCreate
+    bodyCreate(None)
   }
 
-  def bodyCreate: String =
+  post("/play") {
+    contentType = "text/html"
+    _selectedMuplFile match {
+      case None => bodyCreate(Some("No mupl file selected"))
+      case Some(mf) =>
+        logger.info("Clicked the play button")
+        val mupl: String = params("mupl")
+        MuplUtil.writeToFile(mupl, _muplDir.resolve(mf))
+        _player.play(mupl, "play") match {
+          case None => bodyCreate(None)
+          case Some(msg) =>
+            val m = s"Error in player:\n$msg"
+            logger.info(m)
+            bodyCreate(Some(m))
+        }
+    }
+  }
+
+  def bodyCreate(msg: Option[String]): String =
     s"""
        |<html>
        |<head>
@@ -57,8 +68,26 @@ class MuplServlet extends ScalatraServlet {
        |  <input type="submit" value="play"/>
        |</p>
        |</form>
+       |${pMessage(msg)}
        |</html>
        |""".stripMargin
+
+  def pMessage(msg: Option[String]): String = {
+    msg match {
+      case None => ""
+      case Some(m) =>
+        s"""
+           |<p>${htmFormat(m)}</p>
+           |""".stripMargin
+    }
+  }
+
+  def htmFormat(str: String): String = {
+    str
+      .split("\n")
+      .map(l => s"$l<br/>")
+      .mkString("\n")
+  }
 
   def pSelectedMuplFile: String = {
     _selectedMuplFile match {
@@ -67,12 +96,12 @@ class MuplServlet extends ScalatraServlet {
 
     }
   }
-  
+
   def txtMupl: String = {
     _selectedMuplFile match {
       case None => ""
-      case Some(fn) =>       
-        val fp =  _muplDir.resolve(fn)
+      case Some(fn) =>
+        val fp = _muplDir.resolve(fn)
         MuplUtil.fileToStr(fp)
     }
   }

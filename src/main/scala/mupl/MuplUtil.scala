@@ -1,5 +1,6 @@
 package mupl
 
+import java.io.PrintWriter
 import java.nio.file.Path
 
 import scala.io.Source
@@ -24,6 +25,18 @@ object MuplUtil {
       src.close()
     }
   }
+
+  def writeToTmp(content: String): Path = {
+    val tmpFile = Path.of(System.getProperty("java.io.tmpdir")).resolve("all.ck")
+    writeToFile(content, tmpFile)
+  }
+
+  def writeToFile(content: String, file: Path): Path = {
+    new PrintWriter(file.toFile) { write(content); close() }
+    file
+  }
+
+
 
   def walk(f: Chunk => Unit, chunk: Chunk, symbolMap: Option[Map[String, Chunk]] = None): Unit = {
     f(chunk)

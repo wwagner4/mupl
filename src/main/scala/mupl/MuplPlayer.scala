@@ -1,18 +1,9 @@
 package mupl
 
-import java.io.PrintWriter
-import java.nio.file.{Files, Path, Paths}
-
 import scala.sys.process._
 
 class MuplPlayer {
 
-  def strToPath(content: String): Path = {
-    val tmpFile = Path.of(System.getProperty("java.io.tmpdir")).resolve("all.ck")
-    new PrintWriter(tmpFile.toFile) { write(content); close() }
-    tmpFile
-  }
-  
   private val soundsDesc = {
     val sl = List(
       SoundDesc.of("Silent", "Makes no sound. Should be used for pause only melodies"),
@@ -24,27 +15,22 @@ class MuplPlayer {
   
   private val parser = MuplParser(soundsDesc)
 
-  def play(playPath: Path, arg: String): Option[String] = {
-    pathExists(playPath)
-    val bstr = MuplUtil.resToStr("base.ck")
-    val sstr = MuplUtil.resToStr(soundsDesc.resPath)
-    val pstr = MuplUtil.fileToStr(playPath)
-    val piece = parser.parsePiece(pstr)
-    val chuckStr = MuplToChuck.convert(piece.variables)
-    val chuckGlobals = MuplToChuck.convert(piece.globals)
-    val code = chuckGlobals + bstr + "\n" + sstr + "\n" + chuckStr
-    val allp = strToPath(code)
-    val cmd = s"${piece.globals.chuckCall} ${allp.toString}:$arg"
-    val stdout = new StringBuilder
-    val stderr = new StringBuilder
-    val status = cmd.!(ProcessLogger(stdout append _, stderr append _))
-    message(stdout, stderr, status, code)
-  }
-
-  def pathExists(path: Path): Unit = {
-    if (!Files.exists(path)) {
-      val wd = Paths.get(".")
-      throw new IllegalArgumentException(s"file $path does not exist. workdir is ${wd.toAbsolutePath.toString}")
+  def play(mupl: String, arg: String): Option[String] = {
+    try {
+      val bstr = MuplUtil.resToStr("base.ck")
+      val sstr = MuplUtil.resToStr(soundsDesc.resPath)
+      val piece = parser.parsePiece(mupl)
+      val chuckStr = MuplToChuck.convert(piece.variables)
+      val chuckGlobals = MuplToChuck.convert(piece.globals)
+      val code = chuckGlobals + bstr + "\n" + sstr + "\n" + chuckStr
+      val allp = MuplUtil.writeToTmp(code)
+      val cmd = s"${piece.globals.chuckCall} ${allp.toString}:$arg -p"
+      val stdout = new StringBuilder
+      val stderr = new StringBuilder
+      val status = cmd.!(ProcessLogger(stdout append _, stderr append _))
+      message(stdout, stderr, status, code)
+    } catch {
+      case e: Exception => Some(e.getMessage)
     }
   }
 
