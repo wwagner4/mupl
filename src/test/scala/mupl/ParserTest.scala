@@ -149,11 +149,9 @@ class ParserTest extends AnyFunSuite with Matchers {
       """
         |chuckCall <= /opt/bin/chuck
         |globalGainFact <= 2.2
-        |soundsFile <= src/main/chuck/play01.ck
         |
         |""".stripMargin)
     g.chuckCall mustBe "/opt/bin/chuck"
-    g.soundsFile mustBe Paths.get("src/main/chuck/play01.ck")
     g.globalGainFact mustBe 2.2
     
   }

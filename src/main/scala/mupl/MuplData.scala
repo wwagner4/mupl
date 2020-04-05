@@ -37,7 +37,6 @@ case class Pause(dur: Int,
                 ) extends Sound
 
 case class Globals(chuckCall: String = "chuck",
-                   soundsFile: Path = Paths.get("src/main/chuck/sounds.ck"),
                    muplDir: Path = Paths.get("src/main/mupl"),
                    alldur: Int = 20,
                    globalSpeedFact: Double = 1.0,
@@ -55,10 +54,6 @@ object Globals {
     def extend(key: String, strValue: String): Globals = {
       key match {
         case "chuckCall" => g.copy(chuckCall = strValue)
-        case "soundsFile" =>
-          val f = Paths.get(strValue)
-          if (Files.notExists(f)) throw new IllegalArgumentException(s"Path to sounds file does not exist: $strValue")
-          g.copy(soundsFile = f)
         case "muplDir" =>
           val f = Paths.get(strValue)
           if (Files.notExists(f)) throw new IllegalArgumentException(s"Mupl dir does not exist: $strValue")
