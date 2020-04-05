@@ -15,6 +15,7 @@ class MuplPlayer {
   
   private val soundsDesc = {
     val sl = List(
+      SoundDesc.of("Silent", "Makes no sound. Should be used for pause only melodies"),
       SoundDesc.of("SK", "Harpsichord"),
       SoundDesc.of("GlotAhh", "Wooden sticks striking together. No pitch"),
     )
@@ -23,10 +24,10 @@ class MuplPlayer {
   
   private val parser = MuplParser(soundsDesc)
 
-  def play(soundsPath: Path, playPath: Path, arg: String): Option[String] = {
+  def play(playPath: Path, arg: String): Option[String] = {
     pathExists(playPath)
     val bstr = MuplUtil.resToStr("base.ck")
-    val sstr = MuplUtil.fileToStr(soundsPath)
+    val sstr = MuplUtil.resToStr(soundsDesc.resPath)
     val pstr = MuplUtil.fileToStr(playPath)
     val piece = parser.parsePiece(pstr)
     val chuckStr = MuplToChuck.convert(piece.variables)

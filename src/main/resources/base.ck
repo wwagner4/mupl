@@ -76,3 +76,5 @@ class BufMelody extends Melody {
     }
 
 }
+class SilentMelody extends Melody {
+}
