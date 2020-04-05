@@ -1,11 +1,16 @@
 package mupl
 
 import java.nio.file.{Files, Path, Paths}
+import java.util.concurrent.TimeUnit
 
 import org.scalatra._
 import org.slf4j.LoggerFactory
 
+import scala.concurrent.Future
 import scala.jdk.CollectionConverters._
+import scala.concurrent._
+import ExecutionContext.Implicits.global
+import scala.concurrent.duration.Duration
 
 class MuplServlet extends ScalatraServlet {
 
@@ -14,7 +19,7 @@ class MuplServlet extends ScalatraServlet {
   private val _muplDir: Path = Paths.get("/Users/wwagner4/prj/music/mupl/src/main/mupl1")
   private var _selectedMuplFile = Option.empty[String]
   private val _player = new MuplPlayer
-
+  
 
   get("/") {
     contentType = "text/html"
@@ -30,6 +35,12 @@ class MuplServlet extends ScalatraServlet {
     bodyCreate(None)
   }
 
+  get("/stop") {
+    contentType = "text/html"
+    _player.stop()
+    bodyCreate(None)
+  }
+
   post("/play") {
     contentType = "text/html"
     try {
@@ -39,16 +50,24 @@ class MuplServlet extends ScalatraServlet {
           logger.info("Clicked the play button")
           val mupl: String = params("mupl")
           MuplUtil.writeToFile(mupl, _muplDir.resolve(mf))
-          _player.play(mupl, "play") match {
-            case None => bodyCreate(None)
-            case Some(msg) =>
-              val m = s"Error in player:\n$msg"
-              logger.info(m)
-              bodyCreate(Some(m))
+          var playResult = Option.empty[Option[String]]
+          Future {
+            playResult = Some(_player.play(mupl, "play"))
+          }
+          Thread.sleep(1000)
+          playResult match {
+            case None => bodyCreatePlaying()
+            case Some(pr) => pr match {
+              case None => bodyCreate(None)
+              case Some(msg) =>
+                val m = s"Error in player:\n$msg"
+                logger.info(m)
+                bodyCreate(Some(m))
+            }  
           }
       }
     } catch {
-      case e: Exception => 
+      case e: Exception =>
         logger.error(s"Error playing. ${e.getMessage}", e)
         bodyCreate(Some(s"Error playing. ${e.getMessage}"))
     }
@@ -60,6 +79,7 @@ class MuplServlet extends ScalatraServlet {
        |<head>
        |    <title>mupl player</title>
        |</head>
+       |<body>
        |    <table>
        |        <tr>
        |            $tdMuplFiles
@@ -75,6 +95,23 @@ class MuplServlet extends ScalatraServlet {
        |</p>
        |</form>
        |${pMessage(msg)}
+       |</body
+       |</html>
+       |""".stripMargin
+
+  def bodyCreatePlaying(): String =
+    s"""
+       |<html>
+       |<head>
+       |    <title>mupl player</title>
+       |</head>
+       |<body>
+       |$pSelectedMuplFile
+       |<p>
+       |${htmlFormat(txtMupl)}
+       |</p>
+       |<a href="/stop">stop running</a>
+       |</body>
        |</html>
        |""".stripMargin
 
@@ -83,12 +120,12 @@ class MuplServlet extends ScalatraServlet {
       case None => ""
       case Some(m) =>
         s"""
-           |<p>${htmFormat(m)}</p>
+           |<p>${htmlFormat(m)}</p>
            |""".stripMargin
     }
   }
 
-  def htmFormat(str: String): String = {
+  def htmlFormat(str: String): String = {
     str
       .split("\n")
       .map(l => s"$l<br/>")
