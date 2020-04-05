@@ -34,7 +34,7 @@ case class Inst(dur: Int,
                ) extends Sound
 
 case class Pause(dur: Int,
-               ) extends Sound
+                ) extends Sound
 
 case class Globals(chuckCall: String = "chuck",
                    soundsFile: Path = Paths.get("src/main/chuck/sounds.ck"),
@@ -84,3 +84,39 @@ object Globals {
 case class Piece(globals: Globals,
                  variables: List[Variable]
                 )
+
+case class SoundsDesc(resPath: String,
+                      descs: List[SoundDesc]
+                     ) {
+  def isValidId(id: String): Boolean = {
+    descs.map(_.id).contains(id)
+  }
+  def validIds: String = {
+    descs.map(_.id).mkString(", ")
+  }
+}
+
+trait SoundDesc {
+  def id: String
+
+  def desc: String
+
+}
+
+object SoundDesc {
+
+  private val idreg = """[a-zA-Z_][a-zA-Z0-9_]*""".r
+
+  def of(id: String, desc: String): SoundDesc = {
+    if (desc.isEmpty) throw new IllegalArgumentException("Decription must not be empty")
+    if (!idreg.matches(id)) throw new IllegalArgumentException(s"Id must fulfill ${idreg.regex}")
+    val _id = id
+    val _desc = desc
+    new SoundDesc {
+      override def id: String = _id
+      override def desc: String = _desc
+
+    }
+
+  }
+}

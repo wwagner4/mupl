@@ -7,6 +7,16 @@ import org.scalatest.matchers.must.Matchers
 
 class ParserTest extends AnyFunSuite with Matchers {
 
+  private val soundsDesc = {
+    val sl = List(
+      SoundDesc.of("m1", "test"),
+      SoundDesc.of("SK", "test"),
+    )
+    SoundsDesc("sounds.ck", sl)
+  }
+
+  private val parser = MuplParser(soundsDesc)
+
   test("all") {
     val in: String =
       """
@@ -16,7 +26,7 @@ class ParserTest extends AnyFunSuite with Matchers {
         |       a y z
         |     ]}
         |""".stripMargin
-    val piece = MuplParser.parseVariables(in)
+    val piece = parser.parseVariables(in)
     piece.size mustBe 3
     piece.forall(_.isInstanceOf[Variable]) mustBe true
     val e1 = piece(0)
@@ -37,7 +47,7 @@ class ParserTest extends AnyFunSuite with Matchers {
       """
         |m1 = SK[(||)]
         |""".stripMargin
-    val piece = MuplParser.parseVariables(in)
+    val piece = parser.parseVariables(in)
     piece.size mustBe 1
     piece(0).chunk.getClass.getName mustBe "mupl.Melo"
   }
@@ -47,26 +57,26 @@ class ParserTest extends AnyFunSuite with Matchers {
       """
         |m2 = sk
         |""".stripMargin
-    val piece = MuplParser.parseVariables(in)
+    val piece = parser.parseVariables(in)
     piece.size mustBe 1
     piece(0).chunk.getClass.getName mustBe "mupl.Symbol"
   }
 
   test("variable") {
-    val v = MuplParser.parseVariable("a = {}")
+    val v = parser.parseVariable("a = {}")
     v.name mustBe "a"
     v.chunk.getClass.getName mustBe "mupl.Parallel"
   }
 
   test("parse sequence") {
-    val seq: Sequence = MuplParser.parseSequence(
+    val seq: Sequence = parser.parseSequence(
       """[a b c d e f g h] 
         |""".stripMargin)
     seq.chunks.size.mustBe(8)
   }
 
   test("parse melo") {
-    val melo = MuplParser.parseMelo("m1 [ (2|M|55) (4|M|55) (2|LL|77) ]")
+    val melo = parser.parseMelo("m1 [ (2|M|55) (4|M|55) (2|LL|77) ]")
     melo.name.mustBe("m1")
     melo.sounds.size.mustBe(3)
 
@@ -106,7 +116,7 @@ class ParserTest extends AnyFunSuite with Matchers {
 
   for ((in, should) <- dataValidSounds) {
     test(s"parse mupl.Inst $in") {
-      MuplParser.parseSound(in).mustBe(should)
+      parser.parseSound(in).mustBe(should)
     }
   }
 
@@ -123,7 +133,7 @@ class ParserTest extends AnyFunSuite with Matchers {
   for ((in, should) <- dataInvalidSounds) {
     test(s"parse invalid mupl.Inst $in") {
       val thrown = intercept[Exception] {
-        MuplParser.parseSound(in)
+        parser.parseSound(in)
       }
       val tm = thrown.getMessage
       if (!tm.contains(should)) fail(s"Message '$tm' must contain '$should'")
@@ -131,11 +141,11 @@ class ParserTest extends AnyFunSuite with Matchers {
   }
 
   test("globals simple") {
-    val g = MuplParser.parseGlobals("chuckCall <= /opt/bin/chuck")
+    val g = parser.parseGlobals("chuckCall <= /opt/bin/chuck")
     g.chuckCall mustBe "/opt/bin/chuck"
   }
   test("globals multi") {
-    val g = MuplParser.parseGlobals(
+    val g = parser.parseGlobals(
       """
         |chuckCall <= /opt/bin/chuck
         |globalGainFact <= 2.2
@@ -149,7 +159,7 @@ class ParserTest extends AnyFunSuite with Matchers {
   }
   
   test("piece") {
-    val p = MuplParser.parsePiece(
+    val p = parser.parsePiece(
       """
         |chuckCall <= /opt/bin/chuck
         |globalGainFact <= 2.2

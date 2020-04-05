@@ -5,8 +5,18 @@ import org.scalatest.matchers.must.Matchers
 
 class VariableValidatorTest extends AnyFunSuite with Matchers {
 
+  private val soundsDesc = {
+    val sl = List(
+      SoundDesc.of("m1", "test"),
+      SoundDesc.of("X", "test"),
+    )
+    SoundsDesc("sounds.ck", sl)
+  }
+
+  private val parser = MuplParser(soundsDesc)
+
   test("all valid") {
-    val all = MuplParser.parseVariables(
+    val all = parser.parseVariables(
       """
         |a = X[(||) (||) (||) (||) ]
         |b = {[a a a] [a a a]}
@@ -17,7 +27,7 @@ class VariableValidatorTest extends AnyFunSuite with Matchers {
   }
 
   test("unknown symbol") {
-    val all = MuplParser.parseVariables(
+    val all = parser.parseVariables(
       """
         |a = X[(||) (||) (||) (||) ]
         |b = {[a a a] [a x a]}
@@ -33,7 +43,7 @@ class VariableValidatorTest extends AnyFunSuite with Matchers {
   }
 
   test("duplicate symbol") {
-    val all = MuplParser.parseVariables(
+    val all = parser.parseVariables(
       """
         |a = X[(||) (||) (||) (||) ]
         |b = {[a a a] [a x a]}
@@ -49,7 +59,7 @@ class VariableValidatorTest extends AnyFunSuite with Matchers {
   }
 
   test("loop for symbol") {
-    val all = MuplParser.parseVariables(
+    val all = parser.parseVariables(
       """
         |a = X[(||) (||) (||) (||) ]
         |b = {[a a a] [a c a]}

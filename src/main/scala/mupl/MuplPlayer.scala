@@ -12,14 +12,23 @@ class MuplPlayer {
     new PrintWriter(tmpFile.toFile) { write(content); close() }
     tmpFile
   }
+  
+  private val soundsDesc = {
+    val sl = List(
+      SoundDesc.of("SK", "Harpsichord"),
+      SoundDesc.of("GlotAhh", "Wooden sticks striking together. No pitch"),
+    )
+    SoundsDesc("sounds.ck", sl)
+  }
+  
+  private val parser = MuplParser(soundsDesc)
 
   def play(soundsPath: Path, playPath: Path, arg: String): Option[String] = {
-    pathExists(soundsPath)
     pathExists(playPath)
     val bstr = MuplUtil.resToStr("base.ck")
     val sstr = MuplUtil.fileToStr(soundsPath)
     val pstr = MuplUtil.fileToStr(playPath)
-    val piece = MuplParser.parsePiece(pstr)
+    val piece = parser.parsePiece(pstr)
     val chuckStr = MuplToChuck.convert(piece.variables)
     val chuckGlobals = MuplToChuck.convert(piece.globals)
     val code = chuckGlobals + bstr + "\n" + sstr + "\n" + chuckStr

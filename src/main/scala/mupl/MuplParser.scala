@@ -4,7 +4,7 @@ import mupl.GainVal.GainVal
 
 import scala.util.parsing.combinator.RegexParsers
 
-object MuplParser extends RegexParsers {
+case class MuplParser(soundsDesc: SoundsDesc) extends RegexParsers {
   
   def piece: Parser[Piece] = globals ~ variables ~ ".*".r ^^ {case g ~ v ~ rest => 
     if (!rest.isEmpty) throw new IllegalArgumentException(s"There might be no rest after parsing: $rest")
@@ -21,7 +21,9 @@ object MuplParser extends RegexParsers {
   def symbol: Parser[Symbol] = name ^^ { nam => Symbol(nam) }
 
   def melo: Parser[Melo] =
-    name ~ "[" ~ rep(sound) ~ "]" ^^ { case name ~ _ ~ sounds ~ _ => Melo(name, sounds) }
+    name ~ "[" ~ rep(sound) ~ "]" ^^ { case name ~ _ ~ sounds ~ _ => 
+      if (!soundsDesc.isValidId(name)) throw new IllegalArgumentException(s"$name is not a valid sound id. ${soundsDesc.validIds}")
+      Melo(name, sounds) }
 
   def variable: Parser[Variable] = name ~ "=" ~ chunk ^^ {
     case name ~ _ ~ chunk => Variable(name, chunk)

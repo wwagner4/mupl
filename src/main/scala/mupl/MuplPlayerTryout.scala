@@ -15,7 +15,7 @@ object MuplPlayerTryout extends App {
     val muplFile = dir.resolve("mupl").resolve("p1.mupl")
     val p = new MuplPlayer
     val arg = "play"
-    logger.info(s"Starting ${baseFile.toString} ${muplFile.toString}")
+    logger.info(s"Starting ${soundsFile.toString} ${muplFile.toString} $arg")
     val res = p.play(soundsFile, muplFile, arg)
     res match {
       case Some(msg) => logger.info(msg)
