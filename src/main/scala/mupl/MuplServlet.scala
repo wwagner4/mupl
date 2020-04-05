@@ -81,7 +81,8 @@ class MuplServlet extends ScalatraServlet {
        |        * { 
        |            font-family : "Lucida Console", Monospace;
        |            font-size : 15px;
-       |            outline: none;}
+       |            outline: none;
+       |            background-color: #ffd401;}
        |        body { 
        |            margin : 0px 30px 0px 30px;}
        |        textarea {
@@ -123,7 +124,7 @@ class MuplServlet extends ScalatraServlet {
        |$txtMupl
        |</textarea>
        |<p>
-       |  <input type="submit" value="play"/>
+       |  <input type="submit"  accesskey="x" value="play"/>
        |</p>
        |</form>
        |${pMessage(msg)}
