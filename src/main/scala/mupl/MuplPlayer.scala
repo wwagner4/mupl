@@ -1,8 +1,12 @@
 package mupl
 
+import org.slf4j.LoggerFactory
+
 import scala.sys.process._
 
 class MuplPlayer {
+
+  private val logger = LoggerFactory.getLogger("player")
 
   private val soundsDesc = {
     val sl = List(
@@ -12,25 +16,47 @@ class MuplPlayer {
     )
     SoundsDesc("sounds.ck", sl)
   }
-  
+
   private val parser = MuplParser(soundsDesc)
+  private var _process = Option.empty[Process]
+
+  def stop(): Unit = {
+    _process match {
+      case None => logger.info("No process is running")
+      case Some(p) =>
+        p.destroy()
+        logger.info("process stopped")
+    }
+  }
 
   def play(mupl: String, arg: String): Option[String] = {
-    try {
-      val bstr = MuplUtil.resToStr("base.ck")
-      val sstr = MuplUtil.resToStr(soundsDesc.resPath)
-      val piece = parser.parsePiece(mupl)
-      val chuckStr = MuplToChuck.convert(piece.variables)
-      val chuckGlobals = MuplToChuck.convert(piece.globals)
-      val code = chuckGlobals + bstr + "\n" + sstr + "\n" + chuckStr
-      val allp = MuplUtil.writeToTmp(code)
-      val cmd = s"${piece.globals.chuckCall} ${allp.toString}:$arg -p"
-      val stdout = new StringBuilder
-      val stderr = new StringBuilder
-      val status = cmd.!(ProcessLogger(stdout append _, stderr append _))
-      message(stdout, stderr, status, code)
-    } catch {
-      case e: Exception => Some(e.getMessage)
+    _process match {
+      case Some(p) => throw new IllegalStateException(s"Process is currently running")
+      case None =>
+        try {
+          val bstr = MuplUtil.resToStr("base.ck")
+          val sstr = MuplUtil.resToStr(soundsDesc.resPath)
+          val piece = parser.parsePiece(mupl)
+          val chuckStr = MuplToChuck.convert(piece.variables)
+          val chuckGlobals = MuplToChuck.convert(piece.globals)
+          val code = chuckGlobals + bstr + "\n" + sstr + "\n" + chuckStr
+          val allp = MuplUtil.writeToTmp(code)
+          val stdout = new StringBuilder
+          val stderr = new StringBuilder
+
+          val launcher = Process("chuck", Seq(s"${allp.toString}:$arg", "-p"))
+          val process = launcher.run(ProcessLogger(stdout append _, stderr append _))
+          try {
+            _process = Some(process)
+            val status = process.exitValue()
+            message(stdout, stderr, status, code)
+          } finally {
+            _process = None
+          }
+
+        } catch {
+          case e: Exception => Some(e.getMessage)
+        }
     }
   }
 
@@ -40,13 +66,14 @@ class MuplPlayer {
       sb.append(s"return value $status ")
     sb.append(stdout.toString())
     sb.append(stderr.toString())
-    if (sb.isEmpty) None 
+    if (sb.isEmpty) None
     else {
-      val lcode  = code.split("\n")
+      val lcode = code.split("\n")
         .zipWithIndex
-        .map{case (l, i) =>
+        .map { case (l, i) =>
           val i1 = i + 1
-          f"$i1%5d $l"}
+          f"$i1%5d $l"
+        }
         .mkString("\n")
 
       Some(lcode + "\n\n" + sb.toString())

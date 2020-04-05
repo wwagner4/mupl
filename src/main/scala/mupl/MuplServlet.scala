@@ -32,19 +32,25 @@ class MuplServlet extends ScalatraServlet {
 
   post("/play") {
     contentType = "text/html"
-    _selectedMuplFile match {
-      case None => bodyCreate(Some("No mupl file selected"))
-      case Some(mf) =>
-        logger.info("Clicked the play button")
-        val mupl: String = params("mupl")
-        MuplUtil.writeToFile(mupl, _muplDir.resolve(mf))
-        _player.play(mupl, "play") match {
-          case None => bodyCreate(None)
-          case Some(msg) =>
-            val m = s"Error in player:\n$msg"
-            logger.info(m)
-            bodyCreate(Some(m))
-        }
+    try {
+      _selectedMuplFile match {
+        case None => bodyCreate(Some("No mupl file selected"))
+        case Some(mf) =>
+          logger.info("Clicked the play button")
+          val mupl: String = params("mupl")
+          MuplUtil.writeToFile(mupl, _muplDir.resolve(mf))
+          _player.play(mupl, "play") match {
+            case None => bodyCreate(None)
+            case Some(msg) =>
+              val m = s"Error in player:\n$msg"
+              logger.info(m)
+              bodyCreate(Some(m))
+          }
+      }
+    } catch {
+      case e: Exception => 
+        logger.error(s"Error playing. ${e.getMessage}", e)
+        bodyCreate(Some(s"Error playing. ${e.getMessage}"))
     }
   }
 
@@ -112,6 +118,7 @@ class MuplServlet extends ScalatraServlet {
       .iterator()
       .asScala.toList
       .map(f => f.getFileName.toString)
+      .sorted
       .map(fn => s"""<td><a href="/action/$fn">$fn</a></td>""")
       .mkString("\n")
   }
