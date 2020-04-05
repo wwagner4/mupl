@@ -4,7 +4,7 @@ import javax.servlet.Servlet
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.webapp.WebAppContext
 
-object ChuckPlayerMain extends App {
+object ChuckGuiMain extends App {
   val server: Server = WebServiceBuilder.buildWebService(8080, classOf[MuplServlet])
   server.start()
 }
