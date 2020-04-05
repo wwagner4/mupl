@@ -17,7 +17,6 @@ class MuplServlet extends ScalatraServlet {
   private val _muplDir: Path = Paths.get("/Users/wwagner4/prj/music/mupl/src/main/mupl1")
   private var _selectedMuplFile = Option.empty[String]
   private val _player = new MuplPlayer
-  
 
   get("/") {
     contentType = "text/html"
@@ -52,7 +51,7 @@ class MuplServlet extends ScalatraServlet {
           Future {
             playResult = Some(_player.play(mupl, "play"))
           }
-          Thread.sleep(1000)
+          Thread.sleep(500)
           playResult match {
             case None => 
               htmlCreate(bodyCreatePlaying())
@@ -84,14 +83,23 @@ class MuplServlet extends ScalatraServlet {
        |            font-size : 15px;
        |            outline: none;}
        |        body { 
-       |            margin : 20px 10px 20px 10px;}
+       |            margin : 0px 30px 0px 30px;}
        |        textarea {
        |            width: 100%;
-       |            height: 50%; 
+       |            height: 70%; 
        |            box-sizing: border-box;
-       |            background-color: azure;
+       |            background-color: yellow;
        |            border: none;
        |            padding: 5px;}
+       |        .textp {
+       |            width: 100%;
+       |            height: 70%; 
+       |            box-sizing: border-box;
+       |            background-color: yellow;
+       |            padding: 5px;}
+       |        .texth {
+       |            font-size: 70px;
+       |            margin: 4px;}
        |    </style>
        |</head>
        |<body>
@@ -103,10 +111,11 @@ class MuplServlet extends ScalatraServlet {
   
   def bodyCreate(msg: Option[String]): String =
     s"""
-       |    <table>
-       |        <tr>
-       |            $tdMuplFiles
-       |        </tr>
+       |$pHeading
+       |<table>
+       |  <tr>
+       |$tdMuplFiles
+       |   </tr>
        |</table>
        |$pSelectedMuplFile
        |<form action="/play" method="post">
@@ -120,14 +129,21 @@ class MuplServlet extends ScalatraServlet {
        |${pMessage(msg)}
        |""".stripMargin
 
+  
   def bodyCreatePlaying(): String =
     s"""
+       |$pHeading
        |$pSelectedMuplFile
-       |<p>
+       |<p class="textp">
        |${htmlFormat(txtMupl)}
        |</p>
        |<a href="/stop">stop running</a>
        |""".stripMargin
+
+
+  def pHeading: String = {
+    """<p class="texth">m-u-p-l</p> """
+  }
 
   def pMessage(msg: Option[String]): String = {
     msg match {
