@@ -9,7 +9,7 @@ object MuplWebGuiMain extends App {
   
   val logger = LoggerFactory.getLogger("server")
 
-  val server: Server = WebServiceBuilder.buildWebService(8080, classOf[MuplServlet])
+  val server: Server = WebServiceBuilder.buildWebService(8080, classOf[MuplWebGuiServlet])
   try {
     server.start()
   } catch{

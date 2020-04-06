@@ -10,7 +10,7 @@ import scala.jdk.CollectionConverters._
 import scala.concurrent._
 import ExecutionContext.Implicits.global
 
-class MuplServlet extends ScalatraServlet {
+class MuplWebGuiServlet extends ScalatraServlet {
 
   private val logger = LoggerFactory.getLogger("servlet")
 
