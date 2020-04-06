@@ -117,7 +117,7 @@ case class MuplParser(soundsDesc: SoundsDesc) extends RegexParsers {
     Pause(toDuration(a, input))
   }
 
-  private val validDurations = List(1, 2, 4, 8, 32, 64)
+  private val validDurations = List(1, 2, 4, 8, 16, 32, 64)
 
   private def toDuration(value: String, input: String): Int = {
     val valt = value.trim
