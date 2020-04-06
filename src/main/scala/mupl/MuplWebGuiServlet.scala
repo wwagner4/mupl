@@ -5,10 +5,7 @@ import java.nio.file.{Files, Path, Paths}
 import org.scalatra._
 import org.slf4j.LoggerFactory
 
-import scala.concurrent.Future
 import scala.jdk.CollectionConverters._
-import scala.concurrent._
-import ExecutionContext.Implicits.global
 
 class MuplWebGuiServlet extends ScalatraServlet {
 
@@ -47,22 +44,13 @@ class MuplWebGuiServlet extends ScalatraServlet {
           logger.info("Clicked the play button")
           val mupl: String = params("mupl")
           MuplUtil.writeToFile(mupl, _muplDir.resolve(mf))
-          var playResult = Option.empty[Option[String]]
-          Future {
-            playResult = Some(_player.play(mupl, "play"))
-          }
-          Thread.sleep(500)
-          playResult match {
+          val playResult = _player.play(mupl, "play")
+          playResult  match {
             case None => 
-              htmlCreate(bodyCreatePlaying())
-            case Some(pr) => pr match {
-              case None => 
-                htmlCreate(bodyCreate(None))
-              case Some(msg) =>
-                val m = s"Error in player:\n$msg"
-                logger.info(m)
-                htmlCreate(bodyCreate(Some(m)))
-            }  
+              htmlCreate(bodyCreate(None))
+            case Some(msg) =>
+              val m = s"Error: $msg"
+              htmlCreate(bodyCreate(Some(m)))
           }
       }
     } catch {
@@ -125,23 +113,13 @@ class MuplWebGuiServlet extends ScalatraServlet {
        |</textarea>
        |<p>
        |  <input type="submit"  accesskey="x" value="play"/>
+       |  <a href="/stop">stop</a>
        |</p>
        |</form>
        |${pMessage(msg)}
        |""".stripMargin
 
   
-  def bodyCreatePlaying(): String =
-    s"""
-       |$pHeading
-       |$pSelectedMuplFile
-       |<p class="textp">
-       |${htmlFormat(txtMupl)}
-       |</p>
-       |<a href="/stop">stop running</a>
-       |""".stripMargin
-
-
   def pHeading: String = {
     """<p class="texth">m-u-p-l</p> """
   }

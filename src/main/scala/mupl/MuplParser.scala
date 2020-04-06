@@ -7,7 +7,7 @@ import scala.util.parsing.combinator.RegexParsers
 case class MuplParser(soundsDesc: SoundsDesc) extends RegexParsers {
   
   def piece: Parser[Piece] = globals ~ variables ~ ".*".r ^^ {case g ~ v ~ rest => 
-    if (!rest.isEmpty) throw new IllegalArgumentException(s"There might be no rest after parsing: $rest")
+    if (!rest.isEmpty) throw new IllegalArgumentException(s"Syntax error after: $rest")
     Piece(g, v)}
 
   def globals: Parser[Globals] = keyValue.* ^^ {ts => Globals.parse(ts)}
