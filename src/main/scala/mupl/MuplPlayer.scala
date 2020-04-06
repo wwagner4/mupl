@@ -40,6 +40,7 @@ class MuplPlayer {
           val chuckStr = MuplToChuck.convert(piece.variables)
           val chuckGlobals = MuplToChuck.convert(piece.globals)
           val code = chuckGlobals + bstr + "\n" + sstr + "\n" + chuckStr
+          logger.info(code)
           val allp = MuplUtil.writeToTmp(code)
           val stdout = new StringBuilder
           val stderr = new StringBuilder

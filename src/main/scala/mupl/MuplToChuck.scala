@@ -155,12 +155,14 @@ object MuplToChuck {
 
   def parFunction(fnam: List[String], name: String, sb: StringBuilder): Unit = {
     
-    val calls = fnam.map{nam => s"""    spork ~ $nam();"""}.mkString("\n")
+    val calls = fnam.zipWithIndex.map { case (nam, i) =>
+      if (i == fnam.size - 1) s"""    $nam();"""
+      else s"""    spork ~ $nam();"""
+    }.mkString("\n")
     
     val cont = s"""
       |fun void $name() {
       |$calls
-      |    1::second => now;
       |}
       |""".stripMargin
     
