@@ -32,37 +32,48 @@ class MuplPlayer {
 
   def play(mupl: String, arg: String): Option[String] = {
     _process match {
-      case Some(p) => throw new IllegalStateException(s"Process is currently running")
+      case Some(p) =>
+        p.destroy()
+        _play(mupl, arg)
       case None =>
-        try {
-          val bstr = MuplUtil.resToStr("base.ck")
-          val sstr = MuplUtil.resToStr(soundsDesc.resPath)
-          val piece = parser.parsePiece(mupl)
-          val chuckStr = MuplToChuck.convert(piece.variables)
-          val chuckGlobals = MuplToChuck.convert(piece.globals)
-          val code = chuckGlobals + bstr + "\n" + sstr + "\n" + chuckStr
-          logger.info(code)
-          val allp = MuplUtil.writeToTmp(code)
-          val stdout = new StringBuilder
-          val stderr = new StringBuilder
-
-          val launcher = Process("chuck", Seq(s"${allp.toString}:$arg", "-p"))
-          val process = launcher.run(ProcessLogger(stdout append _, stderr append _))
-          try {
-            _process = Some(process)
-            val status = process.exitValue()
-            message(stdout, stderr, status, code)
-          } finally {
-            _process = None
-          }
-
-        } catch {
-          case e: Exception => Some(e.getMessage)
-        }
+        _play(mupl, arg)
     }
   }
 
-  private def message(stdout: StringBuilder, stderr: StringBuilder, status: Int, code: String): Option[String] = {
+  private def _play(mupl: String, arg: String): Option[String] = {
+    try {
+      val bstr = MuplUtil.resToStr("base.ck")
+      val sstr = MuplUtil.resToStr(soundsDesc.resPath)
+      val piece = parser.parsePiece(mupl)
+      val chuckStr = MuplToChuck.convert(piece.variables)
+      val chuckGlobals = MuplToChuck.convert(piece.globals)
+      val code = chuckGlobals + bstr + "\n" + sstr + "\n" + chuckStr
+      logger.info(code)
+      val allp = MuplUtil.writeToTmp(code)
+      val stdout = new StringBuilder
+      val stderr = new StringBuilder
+
+      val launcher = Process("chuck", Seq(s"${allp.toString}:$arg", "-p"))
+      val process = launcher.run(ProcessLogger(stdout append _, stderr append _))
+      try {
+        _process = Some(process)
+        val status = process.exitValue()
+        message(stdout, stderr, status, code)
+      } finally {
+        _process = None
+      }
+
+    } catch {
+      case e: Exception => Some(e.getMessage)
+    }
+  }
+
+
+  private def message(
+                       stdout: StringBuilder,
+                       stderr: StringBuilder,
+                       status: Int,
+                       code: String): Option[String] = {
     val sb = new StringBuilder
     if (status != 0)
       sb.append(s"return value $status ")
@@ -72,9 +83,10 @@ class MuplPlayer {
     else {
       val lcode = code.split("\n")
         .zipWithIndex
-        .map { case (l, i) =>
-          val i1 = i + 1
-          f"$i1%5d $l"
+        .map {
+          case (l, i) =>
+            val i1 = i + 1
+            f"$i1%5d $l"
         }
         .mkString("\n")
 
