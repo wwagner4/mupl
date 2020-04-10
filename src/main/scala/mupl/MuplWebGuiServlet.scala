@@ -20,43 +20,60 @@ class MuplWebGuiServlet extends ScalatraServlet {
     htmlCreate(bodyCreate(None))
   }
 
-  get("/action/:file") {
-    contentType = "text/html" 
+  get("/load/:file") {
+    contentType = "text/html"
     val file = params("file")
     logger.info(s"Clicked on $file")
     _selectedMuplFile = Some(file)
     htmlCreate(bodyCreate(None))
   }
 
-  get("/stop") {
-    contentType = "text/html"
-    _player.stop()
-    htmlCreate(bodyCreate(None))
-  }
-
-  post("/play") {
+  post("/action") {
     contentType = "text/html"
     try {
-      _selectedMuplFile match {
-        case None =>
-          htmlCreate(bodyCreate(Some("No mupl file selected")))
-        case Some(mf) =>
-          logger.info("Clicked the play button")
-          val mupl: String = params("mupl")
-          MuplUtil.writeToFile(mupl, _muplDir.resolve(mf))
-          val playResult = _player.play(mupl, "play")
-          playResult  match {
-            case None => 
+      multiParams("action").toList match {
+        case Nil => // Nothing to do
+        case pv :: _ =>
+          pv match {
+            case "play" =>
+              _selectedMuplFile match {
+                case None =>
+                  htmlCreate(bodyCreate(Some("No mupl file selected")))
+                case Some(mf) =>
+                  logger.info("Clicked the play button")
+                  val mupl: String = params("mupl")
+                  MuplUtil.writeToFile(mupl, _muplDir.resolve(mf))
+                  val playResult = _player.play(mupl, "play")
+                  playResult match {
+                    case None =>
+                      htmlCreate(bodyCreate(None))
+                    case Some(msg) =>
+                      val m = s"Error: $msg"
+                      htmlCreate(bodyCreate(Some(m)))
+                  }
+              }
+            case "stop" =>
+              _selectedMuplFile match {
+                case None => // Nothing to do
+                case Some(mf) =>
+                  logger.info("Clicked the stop button")
+                  val mupl: String = params("mupl")
+                  MuplUtil.writeToFile(mupl, _muplDir.resolve(mf))
+              }
+              _player.stop()
               htmlCreate(bodyCreate(None))
-            case Some(msg) =>
-              val m = s"Error: $msg"
-              htmlCreate(bodyCreate(Some(m)))
+            case _ => //nothing to do
           }
       }
-    } catch {
+    }
+    catch {
       case e: Exception =>
-        logger.error(s"Error playing. ${e.getMessage}", e)
-        htmlCreate(bodyCreate(Some(s"Error playing. ${e.getMessage}")))
+        logger.error(s"Error playing. ${
+          e.getMessage
+        }", e)
+        htmlCreate(bodyCreate(Some(s"Error playing. ${
+          e.getMessage
+        }")))
     }
   }
 
@@ -96,8 +113,8 @@ class MuplWebGuiServlet extends ScalatraServlet {
        |</body
        |</html>
        |""".stripMargin
-  } 
-  
+  }
+
   def bodyCreate(msg: Option[String]): String =
     s"""
        |$pHeading
@@ -107,19 +124,19 @@ class MuplWebGuiServlet extends ScalatraServlet {
        |   </tr>
        |</table>
        |$pSelectedMuplFile
-       |<form action="/play" method="post">
+       |<form action="/action" method="post">
        |<textarea id="mupl" name="mupl" class="nosel">
        |$txtMupl
        |</textarea>
        |<p>
-       |  <input type="submit"  accesskey="x" value="play"/>
-       |  <a href="/stop">stop</a>
+       |  <input type="submit" name="action" value="play"/>
+       |  <input type="submit" name="action" value="stop"/>
        |</p>
        |</form>
        |${pMessage(msg)}
        |""".stripMargin
 
-  
+
   def pHeading: String = {
     """<p class="texth">m-u-p-l</p> """
   }
@@ -148,12 +165,12 @@ class MuplWebGuiServlet extends ScalatraServlet {
       .map(escapeBlank)
       .mkString("")
   }
-  
+
   def escapeBlank(s: String): String = {
     if (s == " ") """&nbsp;"""
     else s
   }
-  
+
   def pSelectedMuplFile: String = {
     _selectedMuplFile match {
       case None => """<p>No mupl file selected</p>"""
@@ -178,7 +195,7 @@ class MuplWebGuiServlet extends ScalatraServlet {
       .asScala.toList
       .map(f => f.getFileName.toString)
       .sorted
-      .map(fn => s"""<td><a href="/action/$fn">$fn</a></td>""")
+      .map(fn => s"""<td><a href="/load/$fn">$fn</a></td>""")
       .mkString("\n")
   }
 }

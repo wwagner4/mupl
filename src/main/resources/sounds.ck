@@ -7,7 +7,7 @@ class SK extends Sound {
     
     fun void play() {
         adsr.set( 10::ms, 8::ms, 1, 500::ms );
-        globalGainFact * gainFact => inst.noteOn;
+        0.1 * globalGainFact * gainFact => inst.noteOn;
         Std.mtof(midi) => inst.freq;
         adsr.keyOn();
         globalSpeedFact / duration => float t;

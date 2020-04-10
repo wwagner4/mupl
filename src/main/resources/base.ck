@@ -53,6 +53,7 @@ class Buf extends Sound {
     
     fun void play() {
         0 => inst.pos;
+        2.0 * gainFact * globalGainFact => inst.gain;
         globalSpeedFact / duration => float t;
         t::second => now;
     }
@@ -70,9 +71,6 @@ class BufMelody extends Melody {
     fun Sound pl(int duration, float gainFact, int midi) {
         Buf sound;
         _inst @=> sound.inst;
-        10.0 * gainFact * globalGainFact => float ga;
-        <<<"ga:", ga>>>
-        10.0 * gainFact * globalGainFact => _inst.gain;
         duration => sound.duration;
         gainFact => sound.gainFact;
         return sound;
