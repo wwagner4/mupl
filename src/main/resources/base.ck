@@ -3,17 +3,6 @@ class Sound {
         <<<"play must be overwritten">>>;
     }
 }
-class Buf extends Sound {
-    SndBuf @inst;
-    2 => int duration;
-    1.0 => float gainFact;
-    
-    fun void play() {
-        0 => inst.pos;
-        globalSpeedFact / duration => float t;
-        t::second => now;
-    }
-}
 class PA extends Sound {
     2 => int duration;
     
@@ -57,6 +46,17 @@ class Melody {
         return null;
     }
 }
+class Buf extends Sound {
+    SndBuf @inst;
+    2 => int duration;
+    1.0 => float gainFact;
+    
+    fun void play() {
+        0 => inst.pos;
+        globalSpeedFact / duration => float t;
+        t::second => now;
+    }
+}
 class BufMelody extends Melody {
 
     SndBuf _inst => dac;
@@ -70,6 +70,9 @@ class BufMelody extends Melody {
     fun Sound pl(int duration, float gainFact, int midi) {
         Buf sound;
         _inst @=> sound.inst;
+        10.0 * gainFact * globalGainFact => float ga;
+        <<<"ga:", ga>>>
+        10.0 * gainFact * globalGainFact => _inst.gain;
         duration => sound.duration;
         gainFact => sound.gainFact;
         return sound;
