@@ -140,7 +140,6 @@ object MuplToChuck {
       s"""
          |fun void ${fnam(name, i)}() {
          |    ${calls(seq)}
-         |    1::second => now;
          |}
          |""".stripMargin
     
