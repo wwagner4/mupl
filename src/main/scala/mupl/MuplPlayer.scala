@@ -13,6 +13,7 @@ class MuplPlayer {
       SoundDesc.of("Silent", "Makes no sound. Should be used for pause only melodies"),
       SoundDesc.of("SK", "Harpsichord"),
       SoundDesc.of("GlotAhh", "Wooden sticks striking together. No pitch"),
+      SoundDesc.of("HM", "FM HevyMetl"),
     )
     SoundsDesc("sounds.ck", sl)
   }

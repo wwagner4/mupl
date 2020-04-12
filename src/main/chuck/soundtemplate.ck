@@ -84,10 +84,14 @@ class BufMelody extends Melody {
 class SilentMelody extends Melody {
 }
 
-
-class Bwg extends Sound {
+# FM HevyMetl 
+class HM extends Sound {
     Gain @g;
     BandedWG @inst;
+
+    PRCRev @rev;
+    HevyMetl @inst; 
+
     // must contain the three parameters
     55 => int midi;
     2 => int duration;
@@ -96,24 +100,22 @@ class Bwg extends Sound {
     
     fun void play() {
         // set parameters for sound objects
-        0.5 => inst.bowPressure; 
         Std.mtof( midi ) => inst.freq;
-        5.0 * gainFact * globalGainFact => g.gain;
+        5.0 * gainFact * globalGainFact => float gain;
         // calculate time in seconds
         globalSpeedFact / duration => float t;
         
         // sound on and off
-        1.0 => inst.noteOn;
+        gain => inst.noteOn;
         t::second => now;
         //0.0 => inst.noteOff;
     }
 }
 
-class BwgMelody extends Melody {
+class HMMelody extends Melody {
     
     // define sound queue
-    Gain _g;
-    BandedWG _inst => _g => dac;
+    HevyMetl _inst => PRCRev _rev => dac;
     
     fun Sound pl(int duration, float gainFact, int midi) {
         // create a new sound
@@ -130,7 +132,7 @@ class BwgMelody extends Melody {
     }
 }
 
-class m1Melody01 extends BwgMelody {
+class m1Melody extends HMMelody {
     
     fun Sound[] sounds() {
         return [
@@ -140,5 +142,5 @@ class m1Melody01 extends BwgMelody {
     
 }
 
-m1Melody01 m1;
+m1Melody m1;
 m1.play();
