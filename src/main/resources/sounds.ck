@@ -84,6 +84,55 @@ class HMMelody extends Melody {
     }
 }
 
+// Moog 1
+class M1 extends Sound {
+    Moog @inst;
+
+    // must contain the three parameters
+    55 => int midi;
+    2 => int duration;
+    1.0 => float gainFact;
+    
+    
+    fun void play() {
+        // set parameters for sound objects
+        0.5 => inst.filterQ;
+        0.4 => inst.filterSweepRate;
+        5 => inst.lfoSpeed;
+        0.2 => inst.lfoDepth;
+        1.0 => inst.volume;
+        
+        Std.mtof( midi ) => inst.freq;
+        0.6 * gainFact * globalGainFact => float gain;
+        // calculate time in seconds
+        globalSpeedFact / duration => float t;
+        
+        // sound on and off
+        gain => inst.noteOn;
+        t::second => now;
+        gain => inst.noteOff;
+    }
+}
+
+class M1Melody extends Melody {
+    
+    // define sound queue
+    Moog _inst => dac;
+    
+    fun Sound pl(int duration, float gainFact, int midi) {
+        // create a new sound
+        M1 sound;
+        // set objects from melody to sound
+        _inst @=> sound.inst;
+        // set the three paranmeters
+        midi => sound.midi;
+        duration => sound.duration;
+        gainFact => sound.gainFact;
+        
+        return sound;
+    }
+}
+
 // Moog 2
 class M2 extends Sound {
     Moog @inst;

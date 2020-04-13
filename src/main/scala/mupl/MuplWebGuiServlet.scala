@@ -92,7 +92,7 @@ class MuplWebGuiServlet extends ScalatraServlet {
        |            margin : 0px 30px 0px 30px;}
        |        textarea {
        |            width: 100%;
-       |            height: 70%; 
+       |            height: 60%; 
        |            box-sizing: border-box;
        |            background-color: yellow;
        |            border: none;
