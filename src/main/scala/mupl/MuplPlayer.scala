@@ -14,6 +14,7 @@ class MuplPlayer {
       SoundDesc.of("SK", "Harpsichord"),
       SoundDesc.of("GlotAhh", "Wooden sticks striking together. No pitch"),
       SoundDesc.of("HM", "FM HevyMetl"),
+      SoundDesc.of("M1", "Moog 1"),
       SoundDesc.of("M2", "Moog 2"),
     )
     SoundsDesc("sounds.ck", sl)
