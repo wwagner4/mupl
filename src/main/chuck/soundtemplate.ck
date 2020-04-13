@@ -84,9 +84,10 @@ class BufMelody extends Melody {
 class SilentMelody extends Melody {
 }
 
-# Moog 2
-class M2 extends Sound {
-    Moog @inst;
+// ?? 
+class XX extends Sound {
+    Ugenxxx @inst;
+    Otherxxx @other
 
     // must contain the three parameters
     55 => int midi;
@@ -96,12 +97,6 @@ class M2 extends Sound {
     
     fun void play() {
         // set parameters for sound objects
-        0.7 => inst.filterQ;
-        0.6 => inst.filterSweepRate;
-        9 => inst.lfoSpeed;
-        0.1 => inst.lfoDepth;
-        1.0 => inst.volume;
-
         
         Std.mtof( midi ) => inst.freq;
         1.0 * gainFact * globalGainFact => float gain;
@@ -109,22 +104,23 @@ class M2 extends Sound {
         globalSpeedFact / duration => float t;
         
         // sound on and off
-        gain => inst.noteOn;
+        gain => inst.noteOn; // or other
         t::second => now;
-        gain => inst.noteOff;
+        gain => inst.noteOff; // or other
     }
 }
 
-class M2Melody extends Melody {
+class XXMelody extends Melody {
     
     // define sound queue
-    Moog _inst => dac;
+    UGenxxx _inst => OtherXXX _other => dac;
     
     fun Sound pl(int duration, float gainFact, int midi) {
         // create a new sound
-        Bwg sound;
+        XX sound;
         // set objects from melody to sound
         _inst @=> sound.inst;
+        _other @=> sound.other;
         // set the three paranmeters
         midi => sound.midi;
         duration => sound.duration;
@@ -134,7 +130,7 @@ class M2Melody extends Melody {
     }
 }
 
-class m1Melody extends HMMelody {
+class m1Melody extends XXMelody {
     
     fun Sound[] sounds() {
         return [
