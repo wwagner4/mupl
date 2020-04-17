@@ -36,10 +36,10 @@ class MuplWebGuiServlet extends ScalatraServlet {
         case Some(mf) =>
           logger.info("Clicked the play button")
           val mupl: String = request.body
+          MuplUtil.writeToFile(mupl, _muplDir.resolve(mf))
           val playResult = _player.play(mupl, "play")
           playResult match {
             case None =>
-              MuplUtil.writeToFile(mupl, _muplDir.resolve(mf))
               "playing"
             case Some(msg) =>
               msg
