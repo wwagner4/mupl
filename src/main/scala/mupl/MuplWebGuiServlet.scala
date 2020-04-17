@@ -110,6 +110,30 @@ class MuplWebGuiServlet extends ScalatraServlet {
        |</head>
        |<body>
        |$body
+       |<script>
+       |function action(event) {
+       |  if (event.keyCode === 13 && event.altKey) {
+       |   event.preventDefault();
+       |   document.getElementById("play-button").click();
+       |  }
+       |  else if (event.keyCode === 83 && event.altKey) {
+       |   event.preventDefault();
+       |   document.getElementById("stop-button").click();
+       |  }
+       |}
+       |function noaction(event) {
+       |  if (event.keyCode === 13 && event.altKey) {
+       |   event.preventDefault();
+       |  }
+       |  else if (event.keyCode === 83 && event.altKey) {
+       |   event.preventDefault();
+       |  }
+       |}
+       |var ta = document.getElementById("mupl");
+       |ta.addEventListener("keyup", action);
+       |ta.addEventListener("keydown", noaction);
+       |ta.addEventListener("keypressed", noaction);
+       |</script>
        |</body
        |</html>
        |""".stripMargin
@@ -129,8 +153,8 @@ class MuplWebGuiServlet extends ScalatraServlet {
        |$txtMupl
        |</textarea>
        |<p>
-       |  <input type="submit" name="action" value="play"/>
-       |  <input type="submit" name="action" value="stop"/>
+       |  <input type="submit" name="action" value="play" id="play-button"/>
+       |  <input type="submit" name="action" value="stop" id="stop-button"/>
        |</p>
        |</form>
        |${pMessage(msg)}
