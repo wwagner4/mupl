@@ -1,8 +1,13 @@
 package mupl
 
+import java.util.concurrent.TimeUnit
+
 import org.slf4j.LoggerFactory
 
+import scala.concurrent.{Await, Future, TimeoutException}
 import scala.sys.process._
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.Duration
 
 class MuplPlayer {
 
@@ -56,18 +61,23 @@ class MuplPlayer {
       val stderr = new StringBuilder
 
       val launcher = Process("chuck", Seq(s"${allp.toString}:$arg", "-p"))
-      val process = launcher.run(ProcessLogger(stdout append _, stderr append _))
-      try {
-        _process = Some(process)
-        val status = process.exitValue()
-        message(stdout, stderr, status, code)
-      } finally {
-        _process = None
+      val f = Future {
+        val process = launcher.run(ProcessLogger(stdout append _, stderr append _))
+        try {
+          _process = Some(process)
+          val status = process.exitValue()
+          message(stdout, stderr, status, code)
+        } finally {
+          _process = None
+        }
       }
-
-    } catch {
+      try {
+        Await.result(f, Duration.create(10, TimeUnit.MICROSECONDS))
+      } catch {
+        case e: TimeoutException => None // Music is playing nothing to do
       case e: Exception => Some(e.getMessage)
     }
+  }
   }
 
 
