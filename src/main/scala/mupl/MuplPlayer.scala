@@ -4,10 +4,10 @@ import java.util.concurrent.TimeUnit
 
 import org.slf4j.LoggerFactory
 
-import scala.concurrent.{Await, Future, TimeoutException}
-import scala.sys.process._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, Future, TimeoutException}
+import scala.sys.process._
 
 class MuplPlayer {
 
@@ -72,14 +72,12 @@ class MuplPlayer {
         }
       }
       try {
-        Await.result(f, Duration.create(10, TimeUnit.MICROSECONDS))
+        Await.result(f, Duration.create(1000, TimeUnit.MILLISECONDS))
       } catch {
-        case e: TimeoutException => None // Music is playing nothing to do
-      case e: Exception => Some(e.getMessage)
+        case e: TimeoutException => Some("Music is playing") // Music is playing nothing to do
+      }
     }
   }
-  }
-
 
   private def message(
                        stdout: StringBuilder,
@@ -100,9 +98,10 @@ class MuplPlayer {
             val i1 = i + 1
             f"$i1%5d $l"
         }
-        .mkString("\n")
-
-      Some(lcode + "\n\n" + sb.toString())
+        .mkString("</br>")
+      val msg = lcode + "</br></br>" + sb.toString()
+      logger.warn("Execution of chuck went twrong " + msg)
+      Some(msg)
     }
   }
 

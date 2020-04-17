@@ -28,52 +28,40 @@ class MuplWebGuiServlet extends ScalatraServlet {
     htmlCreate(bodyCreate(None))
   }
 
-  post("/action") {
-    contentType = "text/html"
-    try {
-      multiParams("action").toList match {
-        case Nil => // Nothing to do
-        case pv :: _ =>
-          pv match {
-            case "play" =>
-              _selectedMuplFile match {
-                case None =>
-                  htmlCreate(bodyCreate(Some("No mupl file selected")))
-                case Some(mf) =>
-                  logger.info("Clicked the play button")
-                  val mupl: String = params("mupl")
-                  MuplUtil.writeToFile(mupl, _muplDir.resolve(mf))
-                  val playResult = _player.play(mupl, "play")
-                  playResult match {
-                    case None =>
-                      htmlCreate(bodyCreate(None))
-                    case Some(msg) =>
-                      val m = s"Error: $msg"
-                      htmlCreate(bodyCreate(Some(m)))
-                  }
-              }
-            case "stop" =>
-              _selectedMuplFile match {
-                case None => // Nothing to do
-                case Some(mf) =>
-                  logger.info("Clicked the stop button")
-                  val mupl: String = params("mupl")
-                  MuplUtil.writeToFile(mupl, _muplDir.resolve(mf))
-              }
-              _player.stop()
-              htmlCreate(bodyCreate(None))
-            case _ => //nothing to do
+  post("/play") {
+    handle(() => {
+      _selectedMuplFile match {
+        case None =>
+          "No mupl file selected"
+        case Some(mf) =>
+          logger.info("Clicked the play button")
+          val mupl: String = request.body
+          val playResult = _player.play(mupl, "play")
+          playResult match {
+            case None =>
+              MuplUtil.writeToFile(mupl, _muplDir.resolve(mf))
+              "playing"
+            case Some(msg) =>
+              msg
           }
       }
-    }
-    catch {
+    })
+  }
+
+  post("/stop") {
+    handle(() => {
+      _player.stop()
+      "stopped"
+    })
+  }
+
+  private def handle(f: () => String): String = {
+    try {
+      f()
+    } catch {
       case e: Exception =>
-        logger.error(s"Error playing. ${
-          e.getMessage
-        }", e)
-        htmlCreate(bodyCreate(Some(s"Error playing. ${
-          e.getMessage
-        }")))
+        logger.error("Error on play. " + e.getMessage, e)
+        e.getMessage
     }
   }
 
@@ -112,23 +100,48 @@ class MuplWebGuiServlet extends ScalatraServlet {
        |$body
        |<script>
        |function action(event) {
-       |  if (event.keyCode === 13 && event.altKey) {
+       |  if (event.keyCode === 13 && event.ctrlKey) {
        |   event.preventDefault();
        |   document.getElementById("play-button").click();
        |  }
-       |  else if (event.keyCode === 83 && event.altKey) {
+       |  else if (event.keyCode === 83 && event.ctrlKey) {
        |   event.preventDefault();
        |   document.getElementById("stop-button").click();
        |  }
        |}
        |function noaction(event) {
-       |  if (event.keyCode === 13 && event.altKey) {
+       |  if (event.keyCode === 13 && event.ctrlKey) {
        |   event.preventDefault();
        |  }
-       |  else if (event.keyCode === 83 && event.altKey) {
+       |  else if (event.keyCode === 83 && event.ctrlKey) {
        |   event.preventDefault();
        |  }
        |}
+       |var pb = document.getElementById("play-button");
+       |pb.addEventListener("click", function(event) {
+       |  var req = new XMLHttpRequest();
+       |  req.onreadystatechange = function () {
+       |    if (req.readyState==4 && req.status==200) {
+       |      var m = document.getElementById("message");
+       |      m.innerHTML = req.responseText;
+       |    }
+       |  };
+       |  req.open('POST', '/play', true);
+       |  var ta = document.getElementById("mupl");
+       |  req.send(ta.value);
+       |});
+       |var sb = document.getElementById("stop-button");
+       |sb.addEventListener("click", function(event) {
+       |  var req = new XMLHttpRequest();
+       |  req.onreadystatechange = function () {
+       |    if (req.readyState==4 && req.status==200) {
+       |      var m = document.getElementById("message");
+       |      m.innerHTML = req.responseText;
+       |    }
+       |  };
+       |  req.open('POST', '/stop', true);
+       |  req.send("");
+       |});
        |var ta = document.getElementById("mupl");
        |ta.addEventListener("keyup", action);
        |ta.addEventListener("keydown", noaction);
@@ -148,31 +161,19 @@ class MuplWebGuiServlet extends ScalatraServlet {
        |   </tr>
        |</table>
        |$pSelectedMuplFile
-       |<form action="/action" method="post">
        |<textarea id="mupl" name="mupl" class="nosel">
        |$txtMupl
        |</textarea>
        |<p>
-       |  <input type="submit" name="action" value="play" id="play-button"/>
-       |  <input type="submit" name="action" value="stop" id="stop-button"/>
+       |  <input type="submit" name="action" value="play (ctrl + return)" id="play-button"/>
+       |  <input type="submit" name="action" value="stop (ctrl + 's')" id="stop-button"/>
        |</p>
-       |</form>
-       |${pMessage(msg)}
+       |<p id="message"></p>
        |""".stripMargin
 
 
   def pHeading: String = {
     """<p class="texth">m-u-p-l</p> """
-  }
-
-  def pMessage(msg: Option[String]): String = {
-    msg match {
-      case None => ""
-      case Some(m) =>
-        s"""
-           |<p>${htmlFormat(m)}</p>
-           |""".stripMargin
-    }
   }
 
   def htmlFormat(str: String): String = {
