@@ -1,11 +1,14 @@
-m1 = SK[(4||44)(4||44)(2||44)]
-m2 = SK[(2||33)(4||33)(4||33)]
-s = Silent[#(1)]
+alldur <= 30
+globalSpeedFact <= 1.5
+
+m1 = SK    [ (4||44) (4||44) (2||44)]
+m2 = SK    [ (2||33) (4||33) (4||33)]
+s  = Silent[#(1)]
 
 s1 = [m1 m1 m2 m2]
 s2 = [m2 m2 m2 m2]
 
 play = {
-[s1 s s1 s1 s s1 ]
-[s2 s2 s s s2 s2 ]
+   [s1 s  s s1 s  s1 s]
+   [s  s2 s s  s2 s2 s]
 }

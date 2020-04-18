@@ -1,13 +1,13 @@
-alldur <= 20
-globalSpeedFact <= 1.5
+alldur <= 10
+globalSpeedFact <= 1.7
 
-m1 =      SK [#(2) (4||46) #(8) (8||49)  #(2) (2||40)  ]
-m2 =      SK [(1||32)                  (1||32)          ]
-p1 = GlotAhh [(8||) (8||) (4||) #(2) (2||) #(2)       ]
-sil = Silent [#(1) #(1)]
+m1 =      SK [#(2)(4||46)#(8)(16|L|49)(16|L|49)   #(2)(2||40)  ]
+m2 =      SK [ (1|HH|32)                           (1|H|32)    ]
+p1 = GlotAhh [ (8|HH|)(16|LL|)(16|LL|)(4||)#(2)    (2||)#(2)   ]
+sil= Silent  [#(1)                                #(1)         ]
 
-play = { 
-    [m1 m1 sil ] 
-    [m2 sil m2 ] 
-    [p1 p1 p1 ] 
+play = {
+    [m1 m1 sil sil] 
+    [m2 m2 m2  sil] 
+    [p1 p1 p1  sil]
 }

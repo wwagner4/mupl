@@ -17,7 +17,7 @@ class MuplWebGuiServlet extends ScalatraServlet {
 
   get("/") {
     contentType = "text/html"
-    htmlCreate(bodyCreate(None))
+    htmlCreate(bodyCreate)
   }
 
   get("/load/:file") {
@@ -25,7 +25,7 @@ class MuplWebGuiServlet extends ScalatraServlet {
     val file = params("file")
     logger.info(s"Clicked on $file")
     _selectedMuplFile = Some(file)
-    htmlCreate(bodyCreate(None))
+    htmlCreate(bodyCreate)
   }
 
   post("/play") {
@@ -152,7 +152,7 @@ class MuplWebGuiServlet extends ScalatraServlet {
        |""".stripMargin
   }
 
-  def bodyCreate(msg: Option[String]): String =
+  def bodyCreate: String =
     s"""
        |$pHeading
        |<table>

@@ -48,34 +48,32 @@ class MuplPlayer {
   }
 
   private def _play(mupl: String, arg: String): Option[String] = {
-    try {
-      val bstr = MuplUtil.resToStr("base.ck")
-      val sstr = MuplUtil.resToStr(soundsDesc.resPath)
-      val piece = parser.parsePiece(mupl)
-      val chuckStr = MuplToChuck.convert(piece.variables)
-      val chuckGlobals = MuplToChuck.convert(piece.globals)
-      val code = chuckGlobals + bstr + "\n" + sstr + "\n" + chuckStr
-      logger.info(code)
-      val allp = MuplUtil.writeToTmp(code)
-      val stdout = new StringBuilder
-      val stderr = new StringBuilder
+    val bstr = MuplUtil.resToStr("base.ck")
+    val sstr = MuplUtil.resToStr(soundsDesc.resPath)
+    val piece = parser.parsePiece(mupl)
+    val chuckStr = MuplToChuck.convert(piece.variables)
+    val chuckGlobals = MuplToChuck.convert(piece.globals)
+    val code = chuckGlobals + bstr + "\n" + sstr + "\n" + chuckStr
+    logger.info(code)
+    val allp = MuplUtil.writeToTmp(code)
+    val stdout = new StringBuilder
+    val stderr = new StringBuilder
 
-      val launcher = Process("chuck", Seq(s"${allp.toString}:$arg", "-p"))
-      val f = Future {
-        val process = launcher.run(ProcessLogger(stdout append _, stderr append _))
-        try {
-          _process = Some(process)
-          val status = process.exitValue()
-          message(stdout, stderr, status, code)
-        } finally {
-          _process = None
-        }
-      }
+    val launcher = Process("chuck", Seq(s"${allp.toString}:$arg", "-p"))
+    val f = Future {
+      val process = launcher.run(ProcessLogger(stdout append _, stderr append _))
       try {
-        Await.result(f, Duration.create(1000, TimeUnit.MILLISECONDS))
-      } catch {
-        case e: TimeoutException => Some("Music is playing") // Music is playing nothing to do
+        _process = Some(process)
+        val status = process.exitValue()
+        message(stdout, stderr, status, code)
+      } finally {
+        _process = None
       }
+    }
+    try {
+      Await.result(f, Duration.create(1000, TimeUnit.MILLISECONDS))
+    } catch {
+      case _: TimeoutException => Some("Music is playing") // Music is playing nothing to do
     }
   }
 
