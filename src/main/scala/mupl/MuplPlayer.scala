@@ -90,6 +90,7 @@ class MuplPlayer {
     sb.append(stdout.toString())
     sb.append(stderr.toString())
     if (sb.isEmpty) None
+    else if (status == 143) Some("stopped")
     else {
       val lcode = code.split("\n")
         .zipWithIndex
