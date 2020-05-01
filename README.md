@@ -2,14 +2,15 @@
 Programming language for composing music pieces
 
 ### TODO
-* Parallel block does not block correctly
-* Synchronize parallel sequences 
-* Keyboard shortcut for play and stop
-* Make chuck call configurable by properties file
-* Make chuck dir configurable by property file
+* Chuck configurable 
+  * chuck call
+  * chuck dir
 * Calculate length of sequences
+  * Synchronize parallel sequences
+  * Parallel block does not block correctly ?
 
 ### Done
+* Keyboard shortcut for play and stop
 * Make GUI
 * Remove / Rename SymbolTable to Validator
 * Make Pause (Sound)
