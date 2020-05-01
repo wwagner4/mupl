@@ -10,8 +10,8 @@ import scala.jdk.CollectionConverters._
 class MuplWebGuiServlet extends ScalatraServlet {
 
   private val logger = LoggerFactory.getLogger("servlet")
-
-  private val _muplDir: Path = Paths.get("/Users/wwagner4/prj/music/mupl/src/main/mupl1")
+  private val mconfig: MuplConfig = MuplUtil.config
+  
   private var _selectedMuplFile = Option.empty[String]
   private val _player = new MuplPlayer
 
@@ -36,7 +36,7 @@ class MuplWebGuiServlet extends ScalatraServlet {
         case Some(mf) =>
           logger.info("Clicked the play button")
           val mupl: String = request.body
-          MuplUtil.writeToFile(mupl, _muplDir.resolve(mf))
+          MuplUtil.writeToFile(mupl, mconfig.workDir.resolve(mf))
           val playResult = _player.play(mupl, "play")
           playResult match {
             case None =>
@@ -208,14 +208,14 @@ class MuplWebGuiServlet extends ScalatraServlet {
     _selectedMuplFile match {
       case None => ""
       case Some(fn) =>
-        val fp = _muplDir.resolve(fn)
+        val fp = mconfig.workDir.resolve(fn)
         MuplUtil.fileToStr(fp)
     }
   }
 
   def tdMuplFiles: String = {
     Files
-      .list(_muplDir)
+      .list(mconfig.workDir)
       .iterator()
       .asScala.toList
       .map(f => f.getFileName.toString)
