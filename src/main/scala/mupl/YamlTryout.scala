@@ -1,7 +1,6 @@
 package mupl
 
 import net.jcazevedo.moultingyaml._
-import net.jcazevedo.moultingyaml.DefaultYamlProtocol._
 
 import scala.io.Source 
 
