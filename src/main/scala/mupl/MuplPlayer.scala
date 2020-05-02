@@ -48,7 +48,7 @@ class MuplPlayer {
   }
 
   private def _play(mupl: String, arg: String): Option[String] = {
-    val bstr = MuplUtil.resToStr("base.ck")
+    val bstr = MuplUtil.resToStr("sounds/base.ck")
     val sstr = MuplUtil.resToStr(soundsDesc.resPath)
     val piece = parser.parsePiece(mupl)
     val chuckStr = MuplToChuck.convert(piece.variables)

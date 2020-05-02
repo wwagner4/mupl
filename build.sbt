@@ -9,4 +9,4 @@ libraryDependencies += "org.scalatra" %% "scalatra" % "2.7.0"
 libraryDependencies += "org.eclipse.jetty" % "jetty-webapp" % "9.4.27.v20200227"
 libraryDependencies += "org.slf4j" % "slf4j-api" % "1.7.30"
 libraryDependencies += "org.slf4j" % "slf4j-simple" % "1.7.30"
-
+libraryDependencies += "net.jcazevedo" %% "moultingyaml" % "0.4.2"

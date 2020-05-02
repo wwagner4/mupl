@@ -2,12 +2,15 @@
 Programming language for composing music pieces
 
 ### TODO
+* Make generator for new sounds
+  * put chuck code into yml file 
+  * allow multiple yml files that reside in mupl home. e.g. ./mupl/sounds
+  * from a single chuck method + additional code pieces
+  * remove base.ck from resources
 * Calculate length of sequences
   * Synchronize parallel sequences
   * Parallel block does not block correctly ?
 * Simplify mupl syntax
-* Make generator for new sounds
-  * from a single chuck method
 
 ### Done
 * Chuck configurable 
