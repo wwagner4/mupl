@@ -1,3 +1,6 @@
+class SilentMelody extends Melody {
+}
+
 class SK extends Sound {
     StifKarp @inst;
     ADSR @adsr;

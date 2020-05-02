@@ -7,6 +7,7 @@ Programming language for composing music pieces
   * allow multiple yml files that reside in mupl home. e.g. ./mupl/sounds
   * from a single chuck method + additional code pieces
   * remove base.ck from resources
+  * Automatically generate Soundtest
 * Calculate length of sequences
   * Synchronize parallel sequences
   * Parallel block does not block correctly ?

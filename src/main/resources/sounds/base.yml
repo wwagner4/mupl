@@ -1,9 +1,15 @@
 Sounds:
-  - name: base sounds
   - desc: Sounds that come bundeled with mupl
   - sounds:
+    - Silence:
+        type: plainFromMelody
+        desc: Harpsichord
+        chuckCode: >
+          class SilentMelody extends Melody {
+          }
     - SK:
         type: plainFromMelody
+        desc: Harpsichord
         chuckCode: >
           class SK extends Sound {
               StifKarp @inst;
@@ -38,10 +44,17 @@ Sounds:
   
           }
     - GlotAhh:
-        type: plainFromBufMelody
-        name: glot_ahh
+        type: plainFromMelody
+        desc: Wooden sticks striking together. No pitch
+        chuckCode: >
+          class GlotAhhMelody extends BufMelody {
+              fun string name() {
+                  return "glot_ahh";
+              }
+          }
     - HM:
         type: plainFromMelody
+        desc: HevyMetl
         chuckCode: >
           // FM HevyMetl 
           class HM extends Sound {
@@ -90,6 +103,7 @@ Sounds:
           }
     - M1:
         type: plainFromMelody
+        desc: Moog 1
         chuckCode: >
           // Moog 1
           class M1 extends Sound {
@@ -141,6 +155,7 @@ Sounds:
           }
     - M2:
         type: plainFromMelody
+        desc: Moog 2
         chuckCode: >
           // Moog 2
           class M2 extends Sound {
