@@ -13,17 +13,7 @@ class MuplPlayer {
 
   private val logger = LoggerFactory.getLogger("player")
 
-  private val soundsDesc = {
-    val sl = List(
-      SoundDesc.of("Silent", "Makes no sound. Should be used for pause only melodies"),
-      SoundDesc.of("SK", "Harpsichord"),
-      SoundDesc.of("GlotAhh", "Wooden sticks striking together. No pitch"),
-      SoundDesc.of("HM", "FM HevyMetl"),
-      SoundDesc.of("M1", "Moog 1"),
-      SoundDesc.of("M2", "Moog 2"),
-    )
-    SoundsDesc("sounds.ck", sl)
-  }
+  private val soundsDesc = SoundLoader.descs
 
   private val parser = MuplParser(soundsDesc)
   private var _process = Option.empty[Process]
@@ -49,7 +39,7 @@ class MuplPlayer {
 
   private def _play(mupl: String, arg: String): Option[String] = {
     val bstr = MuplUtil.resToStr("base.ck")
-    val sstr = MuplUtil.resToStr(soundsDesc.resPath)
+    val sstr = SoundLoader.loadSound()
     val piece = parser.parsePiece(mupl)
     val chuckStr = MuplToChuck.convert(piece.variables)
     val chuckGlobals = MuplToChuck.convert(piece.globals)

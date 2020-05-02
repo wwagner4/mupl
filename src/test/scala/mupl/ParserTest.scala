@@ -12,7 +12,7 @@ class ParserTest extends AnyFunSuite with Matchers {
       SoundDesc.of("m1", "test"),
       SoundDesc.of("SK", "test"),
     )
-    SoundsDesc("sounds.ck", sl)
+    SoundsDescImpl(sl)
   }
 
   private val parser = MuplParser(soundsDesc)

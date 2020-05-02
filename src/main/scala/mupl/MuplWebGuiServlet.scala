@@ -59,6 +59,9 @@ class MuplWebGuiServlet extends ScalatraServlet {
     try {
       f()
     } catch {
+      case e: NullPointerException =>
+        logger.error("Error on play. Null pointer exception", e)
+        "A null pointer exception occurred. For details see server log"
       case e: Exception =>
         logger.error("Error on play. " + e.getMessage, e)
         e.getMessage

@@ -78,7 +78,9 @@ object MuplUtil {
   }
 
   def resToStr(path: String): String = {
-    val is = getClass.getClassLoader.getResourceAsStream(path)
+    val res = getClass.getClassLoader.getResource(path)
+    if (res == null) throw new IllegalStateException("Could not find resource " + path)
+    val is = res.openStream()
     val src = Source.fromInputStream(is)
     try {
       src.getLines.mkString("\n")

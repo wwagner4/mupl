@@ -10,7 +10,7 @@ class VariableValidatorTest extends AnyFunSuite with Matchers {
       SoundDesc.of("m1", "test"),
       SoundDesc.of("X", "test"),
     )
-    SoundsDesc("sounds.ck", sl)
+    SoundsDescImpl(sl)
   }
 
   private val parser = MuplParser(soundsDesc)

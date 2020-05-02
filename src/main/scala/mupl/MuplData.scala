@@ -1,6 +1,5 @@
 package mupl
 
-import java.nio.file.{Files, Path, Paths}
 
 import mupl.GainVal.GainVal
 
@@ -75,9 +74,20 @@ case class Piece(globals: Globals,
                  variables: List[Variable]
                 )
 
-case class SoundsDesc(resPath: String,
-                      descs: List[SoundDesc]
-                     ) {
+trait SoundsDesc{
+  
+  def isValidId(id: String): Boolean
+  
+  def validIds: String
+
+  def descs: List[SoundDesc]
+  
+}
+
+
+
+case class SoundsDescImpl(descs: List[SoundDesc]) extends SoundsDesc {
+
   def isValidId(id: String): Boolean = {
     descs.map(_.id).contains(id)
   }
@@ -110,3 +120,8 @@ object SoundDesc {
 
   }
 }
+
+sealed trait ChuckSound
+
+case class PlainFromMelody(name: String, desc: String, chuckCode: String) extends ChuckSound
+

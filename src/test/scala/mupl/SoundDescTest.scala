@@ -9,7 +9,7 @@ class SoundDescTest  extends AnyFunSuite with Matchers {
     val sds = List(
       SoundDesc.of("kasjdhkasjd", "Some Desc")
     )
-    val ssds = SoundsDesc("sounds.ck", sds)
+    val ssds = SoundsDescImpl(sds)
 
     ssds.isValidId("asdas") mustBe false
     ssds.isValidId("kasjdhkasjd") mustBe true
