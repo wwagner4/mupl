@@ -26,15 +26,17 @@ object SoundLoader {
           case s: YamlString => s.value
           case _ => throw new IllegalStateException("Expected yaml string")
         }
-        val x = obj.getFields(YamlString(name))(0)
-        x match {
-          case obj1: YamlObject =>
-            val vals = obj1.getFields(YamlString("desc"), YamlString("chuckCode"))
+        val obj1 = obj.getFields(YamlString(name))(0)
+        obj1 match {
+          case obj2: YamlObject =>
+            val vals = obj2.getFields(YamlString("desc"), YamlString("chuckCode"))
             val desc = vals(0) match {
               case ys: YamlString => ys.value
+              case _ => throw new IllegalStateException("Expected yaml string")
             }
             val cc = vals(1) match {
               case ys: YamlString => ys.value
+              case _ => throw new IllegalStateException("Expected yaml string")
             }
             PlainFromMelody(name, desc, cc)
           case _ => throw new IllegalStateException("expected yaml object")  
