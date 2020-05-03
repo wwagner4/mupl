@@ -89,6 +89,7 @@ object MuplUtil {
     }
   }
 
+  
   def writeToTmp(content: String): Path = {
     val tmpFile = Path.of(System.getProperty("java.io.tmpdir")).resolve("all.ck")
     writeToFile(content, tmpFile)
@@ -114,5 +115,21 @@ object MuplUtil {
       case _ => // nothing to do  
     }
   }
+
+  /**
+   * Converts code to html with line numbers
+   */
+  def codeToHtml(code: String, msg: String): String = {
+    val lcode = code.split("\n")
+      .zipWithIndex
+      .map {
+        case (l, i) =>
+          val i1 = i + 1
+          f"$i1%5d $l"
+      }
+      .mkString("</br>")
+    lcode + "</br></br>" + msg
+  }
+
 
 }

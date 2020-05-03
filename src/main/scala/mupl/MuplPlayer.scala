@@ -83,18 +83,11 @@ class MuplPlayer {
     if (sb.isEmpty) None
     else if (status == 143) Some("stopped")
     else {
-      val lcode = code.split("\n")
-        .zipWithIndex
-        .map {
-          case (l, i) =>
-            val i1 = i + 1
-            f"$i1%5d $l"
-        }
-        .mkString("</br>")
-      val msg = lcode + "</br></br>" + sb.toString()
-      logger.warn("Execution of chuck went twrong " + msg)
+      val msg = MuplUtil.codeToHtml(code, sb.toString())
+      logger.warn("Execution of chuck went twrong " + sb.toString())
       Some(msg)
     }
   }
+  
 
 }

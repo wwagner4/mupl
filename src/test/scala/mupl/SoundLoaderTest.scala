@@ -16,7 +16,7 @@ class SoundLoaderTest extends AnyFunSuite with Matchers {
         |        }
         |
         |""".stripMargin
-    val snds = SoundYamlLoader.loadChuckSounds(yml)
+    val snds = SoundYamlLoader.loadChuckSounds(yml, "Test string")
     snds.size.mustBe(1)
     snds(0) match {
       case s: PlainFromMelody =>
@@ -39,7 +39,7 @@ class SoundLoaderTest extends AnyFunSuite with Matchers {
         |        }
         |
         |""".stripMargin
-    val snds = SoundYamlLoader.loadChuckSounds(yml)
+    val snds = SoundYamlLoader.loadChuckSounds(yml, "Test string")
     val descs = SoundLoader(snds).descs
     descs.validIds.mustBe("Silence")
     descs.isValidId("Silence").mustBe(true)
@@ -62,11 +62,12 @@ class SoundLoaderTest extends AnyFunSuite with Matchers {
         |        class SilentMelody extends Melody {
         |        }
         |""".stripMargin
-    val snds = SoundYamlLoader.loadChuckSounds(yml)
+    val snds = SoundYamlLoader.loadChuckSounds(yml, "Test string")
     val sl = SoundLoader(snds)
     val chuck = sl.loadSound()
     chuck.mustBe(
       """class SilentMelody extends Melody { }
+        |
         |class SilentMelody extends Melody { }
         |""".stripMargin)
   }

@@ -10,10 +10,10 @@ import scala.jdk.CollectionConverters._
 class MuplWebGuiServlet extends ScalatraServlet {
 
   private val logger = LoggerFactory.getLogger("servlet")
-  private val mconfig: MuplConfig = MuplUtil.config
+  private lazy val mconfig: MuplConfig = MuplUtil.config
   
   private var _selectedMuplFile = Option.empty[String]
-  private val _player = new MuplPlayer
+  private lazy val _player = new MuplPlayer
 
   get("/") {
     contentType = "text/html"
