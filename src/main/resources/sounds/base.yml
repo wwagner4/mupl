@@ -1,14 +1,14 @@
 sounds:
-  - Silence:
+  - Silent:
       type: plainFromMelody
       desc: Harpsichord
-      chuckCode: >
+      chuckCode: |-
         class SilentMelody extends Melody {
         }
   - SK:
       type: plainFromMelody
       desc: Harpsichord
-      chuckCode: >
+      chuckCode: |-
         class SK extends Sound {
             StifKarp @inst;
             ADSR @adsr;
@@ -44,7 +44,7 @@ sounds:
   - GlotAhh:
       type: plainFromMelody
       desc: Wooden sticks striking together. No pitch
-      chuckCode: >
+      chuckCode: |-
         class GlotAhhMelody extends BufMelody {
             fun string name() {
                 return "glot_ahh";
@@ -53,8 +53,7 @@ sounds:
   - HM:
       type: plainFromMelody
       desc: HevyMetl
-      chuckCode: >
-        // FM HevyMetl 
+      chuckCode: |-
         class HM extends Sound {
             PRCRev @rev;
             HevyMetl @inst; 
@@ -80,6 +79,7 @@ sounds:
                 t2::second => now;
             }
         }
+
         class HMMelody extends Melody {
 
             // define sound queue
@@ -102,8 +102,7 @@ sounds:
   - M1:
       type: plainFromMelody
       desc: Moog 1
-      chuckCode: >
-        // Moog 1
+      chuckCode: |-
         class M1 extends Sound {
             Moog @inst;
 
@@ -154,53 +153,53 @@ sounds:
   - M2:
       type: plainFromMelody
       desc: Moog 2
-      chuckCode: >
-        // Moog 2
-        class M2 extends Sound {
-            Moog @inst;
-
-            // must contain the three parameters
-            55 => int midi;
-            2 => int duration;
-            1.0 => float gainFact;
-
-
-            fun void play() {
-                // set parameters for sound objects
-                0.7 => inst.filterQ;
-                0.6 => inst.filterSweepRate;
-                9 => inst.lfoSpeed;
-                0.1 => inst.lfoDepth;
-                1.0 => inst.volume;
-
-
-                Std.mtof( midi ) => inst.freq;
-                0.6 * gainFact * globalGainFact => float gain;
-                // calculate time in seconds
-                globalSpeedFact / duration => float t;
-
-                // sound on and off
-                gain => inst.noteOn;
-                t::second => now;
-                gain => inst.noteOff;
+      chuckCode: |-
+        // Moog configuration  2
+          class M2 extends Sound {
+                Moog @inst;
+            
+                // must contain the three parameters
+                55 => int midi;
+                2 => int duration;
+                1.0 => float gainFact;
+            
+            
+                fun void play() {
+                    // set parameters for sound objects
+                    0.7 => inst.filterQ;
+                    0.6 => inst.filterSweepRate;
+                    9 => inst.lfoSpeed;
+                    0.1 => inst.lfoDepth;
+                    1.0 => inst.volume;
+            
+            
+                    Std.mtof( midi ) => inst.freq;
+                    0.6 * gainFact * globalGainFact => float gain;
+                    // calculate time in seconds
+                    globalSpeedFact / duration => float t;
+            
+                    // sound on and off
+                    gain => inst.noteOn;
+                    t::second => now;
+                    gain => inst.noteOff;
+                }
             }
-        }
-
-        class M2Melody extends Melody {
-
-            // define sound queue
-            Moog _inst => dac;
-
-            fun Sound pl(int duration, float gainFact, int midi) {
-                // create a new sound
-                M2 sound;
-                // set objects from melody to sound
-                _inst @=> sound.inst;
-                // set the three paranmeters
-                midi => sound.midi;
-                duration => sound.duration;
-                gainFact => sound.gainFact;
-
-                return sound;
+            
+            class M2Melody extends Melody {
+            
+                // define sound queue
+                Moog _inst => dac;
+            
+                fun Sound pl(int duration, float gainFact, int midi) {
+                    // create a new sound
+                    M2 sound;
+                    // set objects from melody to sound
+                    _inst @=> sound.inst;
+                    // set the three paranmeters
+                    midi => sound.midi;
+                    duration => sound.duration;
+                    gainFact => sound.gainFact;
+            
+                    return sound;
+                }
             }
-        }

@@ -121,7 +121,11 @@ object SoundDesc {
   }
 }
 
-sealed trait ChuckSound
+sealed trait ChuckSound {
+  def name: String
+  def desc: String
+  def chuckCode: String
+}
 
 case class PlainFromMelody(name: String, desc: String, chuckCode: String) extends ChuckSound
 

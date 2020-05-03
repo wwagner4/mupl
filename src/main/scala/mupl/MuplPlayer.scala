@@ -13,7 +13,10 @@ class MuplPlayer {
 
   private val logger = LoggerFactory.getLogger("player")
 
-  private val soundsDesc = SoundLoader.descs
+  private val soundsDesc = {
+    val csc = SoundYamlLoader.loadChuckSounds()
+    SoundLoader(csc).descs
+  }
 
   private val parser = MuplParser(soundsDesc)
   private var _process = Option.empty[Process]
