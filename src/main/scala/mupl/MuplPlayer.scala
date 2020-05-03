@@ -83,11 +83,11 @@ class MuplPlayer {
     if (sb.isEmpty) None
     else if (status == 143) Some("stopped")
     else {
-      val msg = MuplUtil.codeToHtml(code, sb.toString())
-      logger.warn("Execution of chuck went twrong " + sb.toString())
-      Some(msg)
+      throw new PlayerException(s"Error executing chuck. ${sb.toString()}", code)
     }
   }
   
 
 }
+
+class PlayerException(val msg: String, val code: String) extends Exception(msg)

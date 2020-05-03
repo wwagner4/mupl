@@ -125,7 +125,9 @@ object MuplUtil {
       .map {
         case (l, i) =>
           val i1 = i + 1
-          f"$i1%5d $l"
+          val istr = "%5d".format(i1)
+          val l1 = f"$istr&nbsp;$l"
+          l1.replace(" ", "&nbsp;")
       }
       .mkString("</br>")
     msg + "</br></br>" + lcode

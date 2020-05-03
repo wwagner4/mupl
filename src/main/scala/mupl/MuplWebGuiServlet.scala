@@ -65,6 +65,9 @@ class MuplWebGuiServlet extends ScalatraServlet {
       case e: YamlException =>
         logger.error("Yaml Error on play. " + e.getMessage, e)
         MuplUtil.codeToHtml(e.yamlString, s"Error parsing ${e.resourceDesc}. ${e.msg}");
+      case e: PlayerException =>
+        logger.error("Yaml Error on play. " + e.getMessage, e)
+        MuplUtil.codeToHtml(e.code, e.msg)
       case e: Exception =>
         logger.error("Error on play. " + e.getMessage, e)
         e.getMessage
