@@ -128,7 +128,7 @@ object MuplUtil {
           f"$i1%5d $l"
       }
       .mkString("</br>")
-    lcode + "</br></br>" + msg
+    msg + "</br></br>" + lcode
   }
 
 

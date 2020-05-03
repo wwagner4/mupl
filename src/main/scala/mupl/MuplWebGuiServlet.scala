@@ -62,6 +62,9 @@ class MuplWebGuiServlet extends ScalatraServlet {
       case e: NullPointerException =>
         logger.error("Error on play. Null pointer exception", e)
         "A null pointer exception occurred. For details see server log"
+      case e: YamlException =>
+        logger.error("Yaml Error on play. " + e.getMessage, e)
+        MuplUtil.codeToHtml(e.yamlString, s"Error parsing ${e.resourceDesc}. ${e.msg}");
       case e: Exception =>
         logger.error("Error on play. " + e.getMessage, e)
         e.getMessage
