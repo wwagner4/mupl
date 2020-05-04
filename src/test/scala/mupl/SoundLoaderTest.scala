@@ -1,9 +1,19 @@
 package mupl
 
+import java.nio.file.{Path, Paths}
+
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.must.Matchers
 
 class SoundLoaderTest extends AnyFunSuite with Matchers {
+  
+  private val testCfg = new MuplConfig {
+    override def chuckCall: String = ""
+
+    override def workDir: Path = Paths.get("/")
+
+    override def soundDir: Path = Paths.get("/")
+  }
 
   test("Load Silence") {
     val yml =
@@ -40,7 +50,7 @@ class SoundLoaderTest extends AnyFunSuite with Matchers {
         |
         |""".stripMargin
     val snds = SoundYamlLoader.loadChuckSounds(yml, "Test string")
-    val descs = SoundLoader(snds).descs
+    val descs = SoundLoaderImpl(snds).descs()
     descs.validIds.mustBe("Silence")
     descs.isValidId("Silence").mustBe(true)
     descs.isValidId("X").mustBe(false)
@@ -63,7 +73,7 @@ class SoundLoaderTest extends AnyFunSuite with Matchers {
         |        }
         |""".stripMargin
     val snds = SoundYamlLoader.loadChuckSounds(yml, "Test string")
-    val sl = SoundLoader(snds)
+    val sl = SoundLoaderImpl(snds)
     val chuck = sl.loadSound()
     chuck.mustBe(
       """class SilentMelody extends Melody { }

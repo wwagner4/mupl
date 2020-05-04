@@ -1,6 +1,6 @@
 package mupl
 
-import java.nio.file.{Files, Path, Paths}
+import java.nio.file.Files
 
 import org.scalatra._
 import org.slf4j.LoggerFactory
@@ -11,10 +11,19 @@ class MuplWebGuiServlet extends ScalatraServlet {
 
   private val logger = LoggerFactory.getLogger("servlet")
   private lazy val mconfig: MuplConfig = MuplUtil.config
-  
-  private var _selectedMuplFile = Option.empty[String]
-  private lazy val _player = new MuplPlayer
 
+  private var _selectedMuplFile = Option.empty[String]
+
+  
+  def createSoundLoader(): SoundLoader = {
+    val sounds = SoundYamlLoader.loadChuckSounds(mconfig)
+    SoundLoaderImpl(sounds)
+  }
+
+  val soundManager = new Resetable[SoundLoader](() => createSoundLoader(), "mupl sounds")
+
+  private lazy val _player = MuplPlayer(mconfig, soundManager.value())
+  
   get("/") {
     contentType = "text/html"
     htmlCreate(bodyCreate)
@@ -37,7 +46,7 @@ class MuplWebGuiServlet extends ScalatraServlet {
           logger.info("Clicked the play button")
           val mupl: String = request.body
           MuplUtil.writeToFile(mupl, mconfig.workDir.resolve(mf))
-          val playResult = _player.play(mupl, "play")
+          val playResult = _player.play(mupl, soundManager.value().loadSound(), "play")
           playResult match {
             case None =>
               "playing"
@@ -52,6 +61,15 @@ class MuplWebGuiServlet extends ScalatraServlet {
     handle(() => {
       _player.stop()
       "stopped"
+    })
+  }
+
+  post("/reset") {
+    handle(() => {
+      logger.info(s"Clicked on reset")
+      _player.stop()
+      soundManager.reset()
+      "Reset. Sound will be reloaded on next play"
     })
   }
 
@@ -87,6 +105,8 @@ class MuplWebGuiServlet extends ScalatraServlet {
        |            background-color: #ffd401;}
        |        body { 
        |            margin : 0px 30px 0px 30px;}
+       |        input {
+       |            background-color: yellow;}
        |        textarea {
        |            width: 100%;
        |            height: 60%; 
@@ -151,6 +171,18 @@ class MuplWebGuiServlet extends ScalatraServlet {
        |  req.open('POST', '/stop', true);
        |  req.send("");
        |});
+       |var rb = document.getElementById("reset-button");
+       |rb.addEventListener("click", function(event) {
+       |  var req = new XMLHttpRequest();
+       |  req.onreadystatechange = function () {
+       |    if (req.readyState==4 && req.status==200) {
+       |      var m = document.getElementById("message");
+       |      m.innerHTML = req.responseText;
+       |    }
+       |  };
+       |  req.open('POST', '/reset', true);
+       |  req.send("");
+       |});
        |var ta = document.getElementById("mupl");
        |ta.addEventListener("keyup", action);
        |ta.addEventListener("keydown", noaction);
@@ -176,6 +208,7 @@ class MuplWebGuiServlet extends ScalatraServlet {
        |<p>
        |  <input type="submit" name="action" value="play (ctrl + return)" id="play-button"/>
        |  <input type="submit" name="action" value="stop (ctrl + 's')" id="stop-button"/>
+       |  <input type="submit" name="action" value="reset" id="reset-button"/>
        |</p>
        |<p id="message"></p>
        |""".stripMargin

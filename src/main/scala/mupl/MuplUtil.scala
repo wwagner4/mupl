@@ -15,6 +15,7 @@ object MuplUtil {
   lazy val config: MuplConfig = {
 
     val homeDir = Path.of(System.getProperty("user.home"))
+    val soundPath = homeDir.resolve(Path.of("mupl", "sound"))
 
     def copyRes(resPath: String, resName: String, outDir: Path): Unit = {
       val is = getClass.getClassLoader.getResourceAsStream(resPath + resName)
@@ -59,10 +60,19 @@ object MuplUtil {
       pDir
     }
 
+    def _soundDir(): Path = {
+      if (!Files.exists(soundPath)) {
+        Files.createDirectories(soundPath)
+        copyRes("sounds/", "base.yml", soundPath)
+      }
+      logger.info("Mupl sound dir is " + soundPath)
+      soundPath
+    }
+
     new MuplConfig {
       override val chuckCall: String = _chuckCall()
-
       override val workDir: Path = _workDir()
+      override val soundDir: Path = _soundDir()
     }
 
   }

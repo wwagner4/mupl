@@ -3,10 +3,9 @@ Programming language for composing music pieces
 
 ### TODO
 * Make generator for new sounds
-  * put chuck code into yml file 
-  * allow multiple yml files that reside in mupl home. e.g. ./mupl/sounds
+  * OK put chuck code into yml file 
+  * OK allow multiple yml files that reside in mupl home. e.g. ./mupl/sounds
   * from a single chuck method + additional code pieces
-  * remove base.ck from resources
   * Automatically generate Soundtest
 * Calculate length of sequences
   * Synchronize parallel sequences

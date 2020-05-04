@@ -6,5 +6,6 @@ trait MuplConfig {
 
   def chuckCall: String
   def workDir: Path
+  def soundDir: Path
 
 }

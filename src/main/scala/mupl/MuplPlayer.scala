@@ -9,16 +9,11 @@ import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Future, TimeoutException}
 import scala.sys.process._
 
-class MuplPlayer {
+case class MuplPlayer(muplConfig: MuplConfig, soundLoader: SoundLoader) {
 
   private val logger = LoggerFactory.getLogger("player")
 
-  private val soundsDesc = {
-    val csc = SoundYamlLoader.loadChuckSounds()
-    SoundLoader(csc).descs
-  }
-
-  private val parser = MuplParser(soundsDesc)
+  private val parser = MuplParser(soundLoader.descs())
   private var _process = Option.empty[Process]
 
   def stop(): Unit = {
@@ -30,24 +25,23 @@ class MuplPlayer {
     }
   }
 
-  def play(mupl: String, arg: String): Option[String] = {
+  def play(mupl: String, soundsCode: String, arg: String): Option[String] = {
     _process match {
       case Some(p) =>
         p.destroy()
-        _play(mupl, arg)
+        _play(mupl, soundsCode, arg)
       case None =>
-        _play(mupl, arg)
+        _play(mupl, soundsCode, arg)
     }
   }
 
-  private def _play(mupl: String, arg: String): Option[String] = {
-    val bstr = MuplUtil.resToStr("base.ck")
-    val sstr = SoundLoader.loadSound()
+  private lazy val baseChuckCode = MuplUtil.resToStr("base.ck")
+
+  private def _play(mupl: String, chuckSoundsCode: String, arg: String): Option[String] = {
     val piece = parser.parsePiece(mupl)
     val chuckStr = MuplToChuck.convert(piece.variables)
     val chuckGlobals = MuplToChuck.convert(piece.globals)
-    val code = chuckGlobals + bstr + "\n" + sstr + "\n" + chuckStr
-    logger.info(code)
+    val code = chuckGlobals + baseChuckCode + "\n" + chuckSoundsCode + "\n" + chuckStr
     val allp = MuplUtil.writeToTmp(code)
     val stdout = new StringBuilder
     val stderr = new StringBuilder

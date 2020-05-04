@@ -1,20 +1,41 @@
 package mupl
 
-import net.jcazevedo.moultingyaml._
+import java.nio.file.{Files, Path}
 
+import net.jcazevedo.moultingyaml._
+import org.slf4j.LoggerFactory
+
+import scala.jdk.CollectionConverters._
 import scala.io.Source
 
 class YamlException(val msg: String, val yamlString: String, val resourceDesc: String, cause: Throwable) 
   extends Exception(msg, cause) 
 
 object SoundYamlLoader {
-  
-  def loadChuckSounds(): List[ChuckSound] = {
-    val is = getClass.getClassLoader.getResourceAsStream("sounds/base.yml")
-    val ymlStr = Source.fromInputStream(is).mkString
-    loadChuckSounds(ymlStr, s"Class path resource: sounds/base.yml")
-  }
 
+  def loadChuckSounds(mcfg: MuplConfig): List[ChuckSound] = {
+    
+    val exts = List("yml", "yaml")
+    
+    def isYaml(p: Path): Boolean = {
+      val nam = p.toString.toLowerCase
+      exts.exists(ext => nam.endsWith(ext))
+    }
+     
+    Files.list(mcfg.soundDir)
+      .iterator()
+      .asScala
+      .toList
+      .filter(p => isYaml(p))
+      .flatMap(p => loadChuckSoundsYaml(p))
+  }
+  
+  def loadChuckSoundsYaml(yamlFile: Path): List[ChuckSound] = {
+    val is = Files.newInputStream(yamlFile)
+    val ymlStr = Source.fromInputStream(is).mkString
+    loadChuckSounds(ymlStr, s"File: ${yamlFile.toString}")
+  }
+  
   def loadChuckSounds(yml: String, resourceDesc: String): List[ChuckSound] = {
     def toChuckSound(value: YamlValue): ChuckSound ={
       value match {
@@ -61,18 +82,18 @@ object SoundYamlLoader {
   }
 }
 
-object SoundLoader {
 
-  def loadSound(): String = {
-    val csc = SoundYamlLoader.loadChuckSounds()
-    SoundLoader(csc).loadSound()
-  }
+trait SoundLoader {
+
+  def descs(): SoundsDesc
+
+  def loadSound(): String
 
 }
 
-case class  SoundLoader(sounds: List[ChuckSound]) {
-
-  def descs: SoundsDesc = {
+case class SoundLoaderImpl(sounds: List[ChuckSound]) extends SoundLoader {
+  
+  def descs(): SoundsDesc = {
     val sds = sounds.map{ cs => SoundDesc.of(cs.name, cs.desc)}
     SoundsDescImpl(sds)
   }
@@ -81,4 +102,24 @@ case class  SoundLoader(sounds: List[ChuckSound]) {
     sounds.map(s => s.chuckCode).mkString("\n")
   }
 
+}
+
+class Resetable[T](init: () => T, desc: String) {
+
+  private val logger = LoggerFactory.getLogger("resetable")
+  
+  private var _value = Option.empty[T]
+  
+  def reset(): Unit = {
+    _value = None
+  }
+
+  def value(): T = {
+    _value match {
+      case Some(v) => v
+      case None => 
+        logger.info("Reloading " + desc)
+        val v = init(); _value = Some(v); v
+    }
+  }  
 }
