@@ -109,7 +109,7 @@ sounds:
             // must contain the three parameters
             55 => int midi;
             2 => int duration;
-            1.0 => float gainFact;
+            0.1 => float gainFact;
 
 
             fun void play() {
@@ -118,10 +118,9 @@ sounds:
                 0.4 => inst.filterSweepRate;
                 5 => inst.lfoSpeed;
                 0.2 => inst.lfoDepth;
-                1.0 => inst.volume;
 
                 Std.mtof( midi ) => inst.freq;
-                0.6 * gainFact * globalGainFact => float gain;
+                0.4 * gainFact * globalGainFact => float gain;
                 // calculate time in seconds
                 globalSpeedFact / duration => float t;
 
@@ -166,11 +165,10 @@ sounds:
             
                 fun void play() {
                     // set parameters for sound objects
-                    0.7 => inst.filterQ;
-                    0.6 => inst.filterSweepRate;
-                    9 => inst.lfoSpeed;
-                    0.1 => inst.lfoDepth;
-                    1.0 => inst.volume;
+                    0.9 => inst.filterQ;
+                    0.2 => inst.filterSweepRate;
+                    30 => inst.lfoSpeed;
+                    0.5 => inst.lfoDepth;
             
             
                     Std.mtof( midi ) => inst.freq;

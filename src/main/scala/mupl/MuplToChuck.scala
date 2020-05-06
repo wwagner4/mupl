@@ -72,11 +72,11 @@ object MuplToChuck {
         gain match {
           case None => "1.0"
           case Some(gv) => gv match {
-            case GainVal.HH => "1.7"
-            case GainVal.H => "1.3"
+            case GainVal.HH => "4.0"
+            case GainVal.H => "2.0"
             case GainVal.M => "1.0"
-            case GainVal.L => "0.7"
-            case GainVal.LL => "0.3"
+            case GainVal.L => "0.5"
+            case GainVal.LL => "0.25"
           }
         }
       }
