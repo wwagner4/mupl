@@ -63,6 +63,8 @@ object MuplUtil {
     def _soundDir(): Path = {
       if (!Files.exists(soundPath)) {
         Files.createDirectories(soundPath)
+      }
+      if (!Files.exists(soundPath.resolve("base.yml"))) {
         copyRes("sounds/", "base.yml", soundPath)
       }
       logger.info("Mupl sound dir is " + soundPath)
