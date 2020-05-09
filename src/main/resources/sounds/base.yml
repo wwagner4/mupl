@@ -1,9 +1,9 @@
 sounds:
-  - Silent:
+  - SI:
       type: plainFromMelody
-      desc: Harpsichord
+      desc: Makes no sound at all
       chuckCode: |-
-        class SilentMelody extends Melody {
+        class SIMelody extends Melody {
         }
   - SK:
       type: plainFromMelody
