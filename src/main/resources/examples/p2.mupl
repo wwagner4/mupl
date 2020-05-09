@@ -1,14 +1,43 @@
-alldur <= 30
-globalSpeedFact <= 1.5
+alldur          <= 40
+globalSpeedFact <= 2.2
+globalGainFact  <= 0.6
 
-m1 = SK    [ (4||44) (4||44) (2||44)]
-m2 = SK    [ (2||33) (4||33) (4||33)]
-s  = Silent[#(1)]
 
-s1 = [m1 m1 m2 m2]
-s2 = [m2 m2 m2 m2]
+mb1 =  HM         [(8|LL|44) #(8)#(4)     (8|LL|44)#(8)#(4)]
+mb3 =  HM         [(4|LL|48)  (8|LL|48)#(8)     (4|LL|48)#(4)]
 
-play = {
-   [s1 s  s s1 s  s1 s]
-   [s  s2 s s  s2 s2 s]
+mb4 =  M1         [(8|M|56)(8|M|56)#(8)(8|LL|56)#(8)#(8)(8|H|58)(8|LL|56)]
+mb5 =  M1         [(16|M|64)(16|H|60)#(8)#(2)(16|H|64)(16|M|60)#(8)]
+da3 = GlotAhh     [(4|M|)      (4|M|)(4|M|)(4|M|)]
+da4 = GlotAhh     [(8|M|)(8|M|)#(4)  (4|M|)(4|M|)]
+si =  SI          [#(1)]
+
+p1 = {
+   [si mb1 mb3]
+   [da3 da3 da4]
 }
+p2 = {
+   [mb3 mb1  mb1]
+   [si  mb1  mb3]
+   [da3 da4 da3]
+}
+p2a = {
+   [mb3 mb3 mb3 si]
+   [mb1 mb1 si  si]
+   [da3 da3 da3 si]
+}
+p3 = {
+   [mb3 si  mb3]
+   [mb1 mb1 si ]
+   [mb4 mb4 mb4]
+   [da3 da4 da3]
+}
+p4 = {
+   [mb3 si  mb3]
+   [si  mb1 si ]
+   [mb5 mb5 mb5]
+   [mb4 mb4 mb4]
+   [da3 da4 da3]
+}
+
+play = [p1 p2 p3 p4 p3 p4 p3 p4 p2a]

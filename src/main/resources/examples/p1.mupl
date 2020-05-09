@@ -1,13 +1,39 @@
-alldur <= 10
-globalSpeedFact <= 1.7
+alldur <= 50
+globalSpeedFact <= 1.2
+globalGainFact  <= 0.9
 
-m1 =      SK [#(2)(4||46)#(8)(16|L|49)(16|L|49)   #(2)(2||40)  ]
-m2 =      SK [ (1|HH|32)                           (1|H|32)    ]
-p1 = GlotAhh [ (8|HH|)(16|LL|)(16|LL|)(4||)#(2)    (2||)#(2)   ]
-sil= Silent  [#(1)                                #(1)         ]
+a1  = SK [(4|L|50) (8|L|54) (8|L|54) (4|L|54) (4|L|58)] 
+a2  = SK [(4|L|51) (4|L|55) (4|L|53) (8|L|57) (8|L|57)] 
+a3  = SK [(8|L|52) (8|L|56) (4|L|52) (4|L|54) (4|L|56)] 
 
-play = {
-    [m1 m1 sil sil] 
-    [m2 m2 m2  sil] 
-    [p1 p1 p1  sil]
+b1  = SK [(4|L|53) (8|L|50) (8|L|48) (4|L|46) (4|L|43)] 
+b2  = SK [(4|L|52) (4|L|50) (8|L|48) (8|L|44) (4|L|44)] 
+b3  = SK [(8|L|50) (8|L|50) (4|L|48) (4|L|46) (4|L|45)] 
+
+c1  = SK [(8|L|60) (8|L|59) #(4) (8|LL|55) (8|LL|54) #(4)] 
+c2  = SK [(8|L|54) (8|L|55) #(4) (8|LL|59) (8|LL|60) #(4)] 
+
+p1 = GlotAhh [ (4|LL|)        (4|L|)  (2|LL|)] 
+p2 = GlotAhh [ (8|LL|)(8|L|)  (4|L|)  (2|LL|)] 
+p3 = GlotAhh [ (8|LL|)(8|L|) #(4)    #(2)    ] 
+
+si = SI [#(1)]
+
+m1 = {
+  [a1 a2 a3 c1 a3 a2 a1 c2 ]
+  [si si si si b3 b2 b1 si ]
+  [si si si si si a1 a2 si ]
+  [si si si si si p1 p2 si ]
 }
+m2 = {
+  [a1 a2 a3 c1 a3 a2 a3 c2 ]
+  [b1 b3 b2 si b1 si si si ]
+  [b2 b1 si si si si si si ]
+  [p2 si p2 si p2 si p2 si ]
+}
+m3 = {
+  [a1 a2 a3 c1 b3 b2 b3 c2 ]
+  [p2 p3 p2 si p2 p1 p1 si ]
+}
+
+play = [m1 m2 m3 m3 m1 m2]
